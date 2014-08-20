@@ -70,6 +70,33 @@ class Groups_Command extends WP_CLI_Command {
         $formatter->display_items( $groups );
     }
 
+    /**
+     * delete groups
+     *
+     * ## OPTIONS
+     *
+     * ## EXAMPLES
+     *
+     * wp groups del 3 5
+     *
+     * @subcommand del
+     */
+    public function del( $_, $assoc_args) {
+        global $oUserAccessManager;
+
+        if( count( $_) < 1) {
+            WP_CLI::error("Expected: wp uam groups del <id> ..");
+        }
+
+        foreach ($_ as $delId) {
+            if ($oUserAccessManager->getAccessHandler()->getUserGroups($delId) == null) {
+                WP_CLI::error( "no group with this id: " . $delId);
+            }
+            $oUserAccessManager->getAccessHandler()->deleteUserGroup($delId);
+        }
+        WP_CLI::success( "successfully deleted groups: " . implode( " ", $_));
+    }
+
     protected function get_formatter( &$assoc_args ) {
         return new \WP_CLI\Formatter( $assoc_args, $this->obj_fields, $this->obj_type );
     }
