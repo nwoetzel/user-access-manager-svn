@@ -6,11 +6,11 @@
  * Version: 1.2.5.0
  * Author: Alexander Schneider
  * Description: Manage the access to your posts, pages, categories and files.
- * 
+ *
  * user-access-manager.php
  *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@gmail.com>
@@ -44,15 +44,15 @@ $sPhpVersion = phpversion();
 
 if (version_compare($sPhpVersion, "5.0") === -1) {
     add_action(
-    	'admin_notices', 
+    	'admin_notices',
     	create_function(
-    		'', 
-    		'echo \'<div id="message" class="error"><p><strong>'. 
+    		'',
+    		'echo \'<div id="message" class="error"><p><strong>'.
     	    sprintf(TXT_UAM_PHP_VERSION_TO_LOW, $sPhpVersion).
     		'</strong></p></div>\';'
     	)
     );
-    
+
     $blStop = true;
 }
 
@@ -61,15 +61,15 @@ global $wp_version;
 
 if (version_compare($wp_version, "3.0") === -1) {
     add_action(
-    	'admin_notices', 
+    	'admin_notices',
     	create_function(
-    		'', 
-    		'echo \'<div id="message" class="error"><p><strong>'. 
-    	    sprintf(TXT_UAM_WORDPRESS_VERSION_TO_LOW, $wp_version). 
+    		'',
+    		'echo \'<div id="message" class="error"><p><strong>'.
+    	    sprintf(TXT_UAM_WORDPRESS_VERSION_TO_LOW, $wp_version).
     		'</strong></p></div>\';'
     	)
     );
-    
+
     $blStop = true;
 }
 
@@ -92,39 +92,39 @@ if (class_exists("UserAccessManager")) {
 if (!function_exists("userAccessManagerAP")) {
     /**
      * Creates the filters and actions for the admin panel
-     * 
+     *
      * @return null;
      */
     function userAccessManagerAP()
     {
         global $oUserAccessManager;
         $oCurrentUser = $oUserAccessManager->getCurrentUser();
-        
+
         if (!isset($oUserAccessManager)) {
             return;
         }
-        
+
         $oUserAccessManager->setAtAdminPanel();
         $aUamOptions = $oUserAccessManager->getAdminOptions();
-        
+
         if ($oUserAccessManager->isDatabaseUpdateNecessary()) {
             $sLink = 'admin.php?page=uam_setup';
-            
+
             add_action(
-            	'admin_notices', 
+            	'admin_notices',
             	create_function(
-            		'', 
-            		'echo \'<div id="message" class="error"><p><strong>'. 
+            		'',
+            		'echo \'<div id="message" class="error"><p><strong>'.
             	    sprintf(TXT_UAM_NEED_DATABASE_UPDATE, $sLink).
             		'</strong></p></div>\';'
             	)
             );
         }
-        
+
         get_currentuserinfo();
         $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
-        
+
         if ($oUamAccessHandler->checkUserAccess()
             || $aUamOptions['authors_can_add_posts_to_groups'] == 'true'
         ) {
@@ -132,48 +132,48 @@ if (!function_exists("userAccessManagerAP")) {
             if (function_exists('add_action')) {
                 add_action('admin_print_styles', array($oUserAccessManager, 'addStyles'));
                 add_action('wp_print_scripts', array($oUserAccessManager, 'addScripts'));
-                
+
                 add_action('manage_posts_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
                 add_action('manage_pages_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
                 add_action('save_post', array($oUserAccessManager, 'savePostData'));
-                
+
                 add_action('manage_media_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
-                
+
                 //Actions are only called when the attachment content is modified so we can't use it.
                 //add_action('add_attachment', array($oUserAccessManager, 'savePostData'));
                 //add_action('edit_attachment', array($oUserAccessManager, 'savePostData'));
-                
+
                 add_action('edit_user_profile', array($oUserAccessManager, 'showUserProfile'));
                 add_action('profile_update', array($oUserAccessManager, 'saveUserData'));
-    
+
                 add_action('edit_category_form', array($oUserAccessManager, 'showCategoryEditForm'));
                 add_action('create_category', array($oUserAccessManager, 'saveCategoryData'));
                 add_action('edit_category', array($oUserAccessManager, 'saveCategoryData'));
 
                 add_action('bulk_edit_custom_box', array($oUserAccessManager, 'addBulkAction'));
             }
-            
+
             //Admin filters
             if (function_exists('add_filter')) {
                 //The filter we use instead of add|edit_attachment action, reason see top
                 add_filter('attachment_fields_to_save', array($oUserAccessManager, 'saveAttachmentData'));
-                
+
                 add_filter('manage_posts_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
                 add_filter('manage_pages_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
-                
+
                 add_filter('manage_users_columns', array($oUserAccessManager, 'addUserColumnsHeader'), 10);
                 add_filter('manage_users_custom_column', array($oUserAccessManager, 'addUserColumn'), 10, 3);
-                
+
                 add_filter('manage_edit-category_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
                 add_filter('manage_category_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
             }
-            
+
             if ($aUamOptions['lock_file'] == 'true') {
                 add_action('media_meta', array($oUserAccessManager, 'showMediaFile'), 10, 2);
                 add_filter('manage_media_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
             }
         }
-        
+
         //Clean up at deleting should be always done.
         if (function_exists('add_action')) {
             add_action('update_option_permalink_structure', array($oUserAccessManager, 'updatePermalink'));
@@ -183,7 +183,7 @@ if (!function_exists("userAccessManagerAP")) {
             add_action('delete_user', array($oUserAccessManager, 'removeUserData'));
             add_action('delete_category', array($oUserAccessManager, 'removeCategoryData'), 10, 2);
         }
-        
+
         $oUserAccessManager->noRightsToEditContent();
     }
 }
@@ -191,75 +191,75 @@ if (!function_exists("userAccessManagerAP")) {
 if (!function_exists("userAccessManagerAPMenu")) {
     /**
      * Creates the menu at the admin panel
-     * 
+     *
      * @return null;
      */
     function userAccessManagerAPMenu()
     {
         global $oUserAccessManager;
         $oCurrentUser = $oUserAccessManager->getCurrentUser();
-        
+
         if (!isset($oUserAccessManager)) {
             return;
         }
-        
+
         $aUamOptions = $oUserAccessManager->getAdminOptions();
-        
-        if (ini_get('safe_mode') 
+
+        if (ini_get('safe_mode')
             && $aUamOptions['download_type'] == 'fopen'
         ) {
             add_action(
-            	'admin_notices', 
+            	'admin_notices',
             	create_function(
-            		'', 
-            		'echo \'<div id="message" class="error"><p><strong>'. 
-            	    TXT_UAM_FOPEN_WITHOUT_SAVEMODE_OFF. 
+            		'',
+            		'echo \'<div id="message" class="error"><p><strong>'.
+            	    TXT_UAM_FOPEN_WITHOUT_SAVEMODE_OFF.
             		'</strong></p></div>\';'
             	)
             );
         }
-        
+
         $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
-        
+
         if ($oUamAccessHandler->checkUserAccess()) {
             //TODO
             /**
              * --- BOF ---
-             * Not the best way to handle full user access capabilities seems 
+             * Not the best way to handle full user access capabilities seems
              * to be the right way, but it is way difficult.
              */
-            
+
             //Admin main menu
             if (function_exists('add_menu_page')) {
                 add_menu_page('User Access Manager', 'UAM', 'read', 'uam_usergroup', array($oUserAccessManager, 'printAdminPage'), 'div');
             }
-            
+
             //Admin sub menus
             if (function_exists('add_submenu_page')) {
                 add_submenu_page('uam_usergroup', TXT_UAM_MANAGE_GROUP, TXT_UAM_MANAGE_GROUP, 'read', 'uam_usergroup', array($oUserAccessManager, 'printAdminPage'));
                 add_submenu_page('uam_usergroup', TXT_UAM_SETTINGS, TXT_UAM_SETTINGS, 'read', 'uam_settings', array($oUserAccessManager, 'printAdminPage'));
                 add_submenu_page('uam_usergroup', TXT_UAM_SETUP, TXT_UAM_SETUP, 'read', 'uam_setup', array($oUserAccessManager, 'printAdminPage'));
                 add_submenu_page('uam_usergroup', TXT_UAM_ABOUT, TXT_UAM_ABOUT, 'read', 'uam_about', array($oUserAccessManager, 'printAdminPage'));
-                
+
                 do_action('uam_add_submenu');
             }
             /**
              * --- EOF ---
              */
         }
-        
+
         if ($oUamAccessHandler->checkUserAccess()
             || $aUamOptions['authors_can_add_posts_to_groups'] == 'true'
         ) {
             //Admin meta boxes
             if (function_exists('add_meta_box')) {
                 $aPostableTypes = $oUamAccessHandler->getPostableTypes();
-                
+
                 foreach ($aPostableTypes as $sPostableType) {
                     add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), $sPostableType, 'side');
                 }
-                
+
                 /*add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), 'post', 'side');
                 add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), 'page', 'side');*/
             }
@@ -279,7 +279,7 @@ if (isset($oUserAccessManager)) {
     if (function_exists('register_activation_hook')) {
         register_activation_hook(__FILE__, array($oUserAccessManager, 'install'));
     }
-    
+
     //uninstall
     if (function_exists('register_uninstall_hook')) {
         register_uninstall_hook(__FILE__, 'userAccessManagerUninstall');
@@ -287,15 +287,15 @@ if (isset($oUserAccessManager)) {
         //Fallback
         register_deactivation_hook(__FILE__, array($oUserAccessManager, 'uninstall'));
     }
-    
+
     //deactivation
     if (function_exists('register_deactivation_hook')) {
         register_deactivation_hook(__FILE__, array($oUserAccessManager, 'deactivate'));
     }
-    
+
     //Redirect
     $aUamOptions = $oUserAccessManager->getAdminOptions();
-    
+
     if ($aUamOptions['redirect'] != 'false' || isset($_GET['uamgetfile'])) {
         add_filter('wp_headers', array($oUserAccessManager, 'redirect'), 10, 2);
     }
@@ -307,7 +307,7 @@ if (isset($oUserAccessManager)) {
         add_action('admin_init', 'userAccessManagerAP');
         add_action('admin_menu', 'userAccessManagerAPMenu');
     }
-    
+
     //Filters
     if (function_exists('add_filter')) {
         add_filter('wp_get_attachment_thumb_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
@@ -326,4 +326,9 @@ if (isset($oUserAccessManager)) {
         add_filter('parse_query', array($oUserAccessManager, 'parseQuery'));
         add_filter('getarchives_where', array($oUserAccessManager, 'showPostSql'));
     }
+}
+
+// add the cli interface to the known commands
+if ( defined('WP_CLI') && WP_CLI ) {
+    include __DIR__ . '/includes/wp-cli.php';
 }
