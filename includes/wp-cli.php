@@ -33,9 +33,9 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
      *
      * ## OPTIONS
      *
-	 * [--format=<format>]
-	 * : Accepted values: table, csv, json, count, ids. Default: table
-	 *
+     * [--format=<format>]
+     * : Accepted values: table, csv, json, count, ids. Default: table
+     *
      * ## EXAMPLES
      *
      * wp groups list
@@ -56,7 +56,7 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
             $group = array();
             $group[ 'ID'          ] = $oUamUserGroup->getId();
             $group[ 'groupname'   ] = $oUamUserGroup->getGroupName();
-   			$group[ 'groupdesc'   ] = $oUamUserGroup->getGroupDesc();
+            $group[ 'groupdesc'   ] = $oUamUserGroup->getGroupDesc();
             $group[ 'read_access' ] = $oUamUserGroup->getReadAccess();
             $group[ 'write_access'] = $oUamUserGroup->getWriteAccess();
             $group[ 'roles'       ] = implode( ",", array_keys( $oUamUserGroup->getObjectsFromType('role')));
@@ -109,16 +109,16 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
      * : the name of the new group
      *
      * [--porcelain]
-	 * : Output just the new post id.
-	 *
-	 * [--roles=<list>]
-	 * : comma seperated list of group associated roles
-	 *
-	 * [--<field>=<value>]
-	 * : Associative args for new UamUserGroup object
-	 * allowed fields and values are: groupdesc="", read_access={group,all*}, write_access={group,all*}, ip_range="192.168.0.1-192.168.0.10;192.168.0.20-192.168.0.30"
-	 * *=default
-	 *
+     * : Output just the new post id.
+     *
+     * [--roles=<list>]
+     * : comma seperated list of group associated roles
+     *
+     * [--<field>=<value>]
+     * : Associative args for new UamUserGroup object
+     * allowed fields and values are: groupdesc="", read_access={group,all*}, write_access={group,all*}, ip_range="192.168.0.1-192.168.0.10;192.168.0.20-192.168.0.30"
+     * *=default
+     *
      * ## EXAMPLES
      *
      * wp groups add fighters --read_access=all
