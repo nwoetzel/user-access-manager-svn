@@ -1,11 +1,11 @@
 <?php
 /**
  * UamUserGroup.class.php
- * 
+ *
  * The UamUserGroup class file.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -17,7 +17,7 @@
 
 /**
  * The user group class.
- * 
+ *
  * @category UserAccessManager
  * @package  UserAccessManager
  * @author   Alexander Schneider <alexanderschneider85@gmail.com>
@@ -59,17 +59,17 @@ class UamUserGroup
              * @var wpdb $wpdb
              */
             global $wpdb;
-            
+
             $this->_iId = $iId;
-            
+
             $aDbUserGroup = $wpdb->get_row(
             	"SELECT *
     			FROM ".DB_ACCESSGROUP."
     			WHERE ID = ".$this->getId()."
-    			LIMIT 1", 
+    			LIMIT 1",
                 ARRAY_A
             );
-            
+
             $this->_sGroupName = $aDbUserGroup['groupname'];
             $this->_sGroupDesc = $aDbUserGroup['groupdesc'];
             $this->_sReadAccess = $aDbUserGroup['read_access'];
@@ -90,20 +90,20 @@ class UamUserGroup
             }
         }
     }
-    
+
     /**
      * Returns the user access handler object.
-     * 
+     *
      * @return UamAccessHandler
      */
     public function &getAccessHandler()
     {
         return $this->_oAccessHandler;
     }
-    
+
     /**
      * Deletes the user group.
-     * 
+     *
      * @return boolean
      */
     public function delete()
@@ -116,19 +116,19 @@ class UamUserGroup
          * @var wpdb $wpdb
          */
         global $wpdb;
-        
+
         $wpdb->query(
-        	"DELETE FROM " . DB_ACCESSGROUP . " 
+        	"DELETE FROM " . DB_ACCESSGROUP . "
         	WHERE ID = $this->_iId LIMIT 1"
         );
-        
+
         foreach ($this->getAllObjectTypes() as $sObjectType) {
             $this->_deleteObjectsFromDb($sObjectType);
         }
 
         return true;
     }
-    
+
     /**
      * Saves the user group.
      *
@@ -142,19 +142,19 @@ class UamUserGroup
          * @var wpdb $wpdb
          */
         global $wpdb;
-        
+
         if ($this->_iId == null) {
             $wpdb->query(
             	"INSERT INTO " . DB_ACCESSGROUP . " (
-            		ID, 
-            		groupname, 
-            		groupdesc, 
-            		read_access, 
-            		write_access, 
+            		ID,
+            		groupname,
+            		groupdesc,
+            		read_access,
+            		write_access,
             		ip_range
-            	) 
+            	)
             	VALUES (
-            		NULL, 
+            		NULL,
             		'" . $this->_sGroupName . "',
             		'" . $this->_sGroupDesc . "',
             		'" . $this->_sReadAccess . "',
@@ -162,7 +162,7 @@ class UamUserGroup
             		'" . $this->_sIpRange . "'
             	)"
             );
-            
+
             $this->_iId = $wpdb->insert_id;
         } else {
             $wpdb->query(
@@ -182,7 +182,7 @@ class UamUserGroup
                 }
             }
         }
-        
+
         foreach ($this->getAllObjectTypes() as $sObjectType) {
             $aKeys = $this->_getAssignedObjects($sObjectType);
 
@@ -192,115 +192,115 @@ class UamUserGroup
             }
         }
     }
-    
-    
+
+
     /*
      * Primary values.
      */
-    
+
     /**
      * Returns the group _iId.
-     * 
+     *
      * @return integer
      */
     public function getId()
     {
         return $this->_iId;
     }
-    
+
     /**
      * Returns the group name.
-     * 
+     *
      * @return string
      */
     public function getGroupName()
     {
         return $this->_sGroupName;
     }
-    
+
     /**
      * Sets the group name.
-     * 
+     *
      * @param string $sGroupName The new group name.
-     * 
+     *
      * @return null
      */
     public function setGroupName($sGroupName)
     {
         $this->_sGroupName = $sGroupName;
     }
-    
+
     /**
      * Returns the group description.
-     * 
+     *
      * @return string
      */
     public function getGroupDesc()
     {
         return $this->_sGroupDesc;
     }
-    
+
     /**
      * Sets the group description.
-     * 
+     *
      * @param string $sGroupDesc The new group description.
-     * 
+     *
      * @return null
      */
     public function setGroupDesc($sGroupDesc)
     {
         $this->_sGroupDesc = $sGroupDesc;
     }
-    
+
     /**
      * Returns the read access.
-     * 
+     *
      * @return string
      */
     public function getReadAccess()
     {
         return $this->_sReadAccess;
     }
-    
+
     /**
      * Sets the read access.
-     * 
+     *
      * @param string $sReadAccess The read access.
-     * 
+     *
      * @return null
      */
     public function setReadAccess($sReadAccess)
     {
         $this->_sReadAccess = $sReadAccess;
     }
-    
+
     /**
      * Returns the write access.
-     * 
+     *
      * @return string
      */
     public function getWriteAccess()
     {
         return $this->_sWriteAccess;
     }
-    
+
     /**
      * Sets the write access.
-     * 
+     *
      * @param string $sWriteAccess The write access.
-     * 
+     *
      * @return null
      */
     public function setWriteAccess($sWriteAccess)
     {
         $this->_sWriteAccess = $sWriteAccess;
     }
-    
+
     /**
      * Returns the ip range.
-     * 
+     *
      * @param string $sType The return type.
-     * 
+     *
      * @return array|string
      */
     public function getIpRange($sType = null)
@@ -308,21 +308,21 @@ class UamUserGroup
         if ($sType == 'string') {
             return $this->_sIpRange;
         }
-        
+
         $aIpRange = explode(';', $this->_sIpRange);
-        
+
         if ($aIpRange[0] == null) {
             return null;
         }
-        
+
         return $aIpRange;
     }
-    
+
     /**
      * Sets the ip range.
-     * 
+     *
      * @param string|array $mIpRange The new ip range.
-     * 
+     *
      * @return null
      */
     public function setIpRange($mIpRange)
@@ -330,13 +330,13 @@ class UamUserGroup
         if (is_array($mIpRange)) {
             $mIpRange = implode(';', $mIpRange);
         }
-        
+
         $this->_sIpRange = $mIpRange;
     }
-    
+
     /**
      * Returns all _aObjects types.
-     * 
+     *
      * @return array
      */
     public function getAllObjectTypes()
@@ -416,13 +416,13 @@ class UamUserGroup
     /*
      * Meta functions.
      */
-    
+
     /**
      * Magic method getter.
-     * 
+     *
      * @param string $sName      The name of the function
      * @param array  $aArguments The arguments for the function
-     * 
+     *
      * @return mixed
      */
     public function __call($sName, $aArguments)
@@ -438,27 +438,27 @@ class UamUserGroup
         } elseif ($oUam->startsWith($sName, 'isMember')) {
             $sPrefix = 'isMember';
         }
-        
+
         $sObjectType = str_replace($sPrefix, '', $sName);
         $sObjectType = strtolower($sObjectType);
-        
+
         $iObjectId = $aArguments[0];
-        
+
         if ($sPrefix == 'add') {
             return $this->addObject(
-                $sObjectType, 
+                $sObjectType,
                 $iObjectId
             );
         } elseif ($sPrefix == 'remove') {
             return $this->removeObject(
-                $sObjectType, 
+                $sObjectType,
                 $iObjectId
             );
         } elseif ($sPrefix == 'ismember') {
             $blWithInfo = $aArguments[1];
-            
+
             return $this->objectIsMember(
-            	$sObjectType, 
+            	$sObjectType,
                 $iObjectId,
                 $blWithInfo
             );
@@ -466,10 +466,10 @@ class UamUserGroup
 
         return null;
     }
-    
+
     /**
      * Returns the sql query.
-     * 
+     *
      * @param string $sObjectType The object type.
      * @param string $sAction     The sql action.
      * @param array  $aKeys       The keys for the insert query.
@@ -479,20 +479,20 @@ class UamUserGroup
     protected function _getSqlQuery($sObjectType, $sAction, $aKeys = array())
     {
         $sSql = '';
-        
+
         if ($sAction == 'select') {
             $sSql = "SELECT object_id as id
     			FROM ".DB_ACCESSGROUP_TO_OBJECT."
-    			WHERE group_id = ".$this->getId()." 
+    			WHERE group_id = ".$this->getId()."
     			AND object_type = '".$sObjectType ."'";
         } elseif ($sAction == 'delete') {
-            $sSql = "DELETE FROM ".DB_ACCESSGROUP_TO_OBJECT." 
-        		WHERE group_id = ".$this->getId()." 
+            $sSql = "DELETE FROM ".DB_ACCESSGROUP_TO_OBJECT."
+        		WHERE group_id = ".$this->getId()."
                 AND object_type = '".$sObjectType ."'";
         } elseif ($sAction == 'insert') {
             $sSql = "INSERT INTO ".DB_ACCESSGROUP_TO_OBJECT." (
-            		group_id, 
-            		object_id, 
+            		group_id,
+            		object_id,
             		object_type
             	) VALUES ";
 
@@ -504,16 +504,16 @@ class UamUserGroup
             $sSql = rtrim($sSql, ', ');
             $sSql .= " ON DUPLICATE KEY UPDATE group_id = group_id ";
         }
-        
+
         return $sSql;
     }
-    
+
     /**
      * Adds a object of the given type.
-     * 
+     *
      * @param string  $sObjectType The object type.
      * @param integer $iObjectId   The object _iId.
-     * 
+     *
      * @return null
      */
     public function addObject($sObjectType, $iObjectId)
@@ -521,25 +521,25 @@ class UamUserGroup
         if (!$this->isValidObjectType($sObjectType)) {
             return;
         }
-        
+
         $this->getAccessHandler()->unsetUserGroupsForObject();
         $this->getObjectsFromType($sObjectType);
-        
+
         $oObject = new stdClass;
         $oObject->iId = $iObjectId;
-        
+
         $this->_aObjects[$sObjectType]['real'][$iObjectId] = $oObject;
         $this->_aObjects[$sObjectType]['full'] = -1;
-        
+
         $this->_aAssignedObjects[$sObjectType][$iObjectId] = $iObjectId;
     }
-    
+
     /**
      * Removes a object of the given type.
-     * 
+     *
      * @param string  $sObjectType The object type.
      * @param integer $sObjectId   The object _iId.
-     * 
+     *
      * @return null
      */
     public function removeObject($sObjectType, $sObjectId)
@@ -547,22 +547,22 @@ class UamUserGroup
         if (!$this->isValidObjectType($sObjectType)) {
             return;
         }
-        
+
         $this->getAccessHandler()->unsetUserGroupsForObject();
         $this->getObjectsFromType($sObjectType);
-        
+
         unset($this->_aObjects[$sObjectType]['real'][$sObjectId]);
         $this->_aObjects[$sObjectType]['full'] = -1;
-        
+
         unset($this->_aSingleObjects[$sObjectType][$sObjectId]);
         unset($this->_aAssignedObjects[$sObjectType][$sObjectId]);
     }
-    
+
     /**
      * Returns the assigned _aObjects.
-     * 
+     *
      * @param string $sObjectType The object type.
-     * 
+     *
      * @return array
      */
     protected function _getAssignedObjects($sObjectType)
@@ -596,16 +596,16 @@ class UamUserGroup
 
             $oUserAccessManager->addToCache($sCacheKey, $this->_aAssignedObjects[$sObjectType]);
         }
-        
+
         return $this->_aAssignedObjects[$sObjectType];
     }
-    
+
     /**
      * Checks if the object is assigned to the group.
-     * 
+     *
      * @param string  $sObjectType The object type.
      * @param integer $iObjectId   The object _iId.
-     * 
+     *
      * @return boolean
      */
     protected function _isObjectAssignedToGroup($sObjectType, $iObjectId)
@@ -613,13 +613,13 @@ class UamUserGroup
         $aAssignedObjects = $this->_getAssignedObjects($sObjectType);
         return isset($aAssignedObjects[$iObjectId]);
     }
-    
+
     /**
      * Unset the objects.
-     * 
+     *
      * @param string  $sObjectType The object type.
      * @param boolean $blPlusRemove If true also database entries will remove.
-     * 
+     *
      * @return null;
      */
     public function unsetObjects($sObjectType, $blPlusRemove = false)
@@ -627,22 +627,22 @@ class UamUserGroup
         if (!$this->isValidObjectType($sObjectType)) {
             return;
         }
-        
+
         if ($blPlusRemove) {
             $this->_deleteObjectsFromDb($sObjectType);
         }
-        
+
         $this->_aObjects[$sObjectType] = array(
     		'real' => array(),
         	'full' => array(),
         );
     }
-    
+
     /**
      * Removes all _aObjects from the user group.
-     * 
+     *
      * @param string $sObjectType The object type.
-     * 
+     *
      * @return null
      */
     protected function _deleteObjectsFromDb($sObjectType)
@@ -652,20 +652,20 @@ class UamUserGroup
              * @var wpdb $wpdb
              */
             global $wpdb;
-        
+
             $wpdb->query(
             	$this->_getSqlQuery($sObjectType, 'delete')
             );
         }
     }
-    
+
 	/**
      * Checks if the given object is a member of the group.
-     * 
+     *
      * @param string   $sObjectType The object type.
      * @param integer  $iObjectId   The _iId of the object which should be checked.
      * @param boolean  $blWithInfo   If true then we return additional info.
-     * 
+     *
      * @return boolean|array
      */
     public function objectIsMember($sObjectType, $iObjectId, $blWithInfo = false)
@@ -694,10 +694,10 @@ class UamUserGroup
 
     /**
      * Returns all objects of the given type.
-     * 
+     *
      * @param string $sObjectType The object type.
      * @param string $sType       The return type, could be real or full.
-     * 
+     *
      * @return array
      */
     function getObjectsFromType($sObjectType, $sType = 'real')
@@ -705,11 +705,11 @@ class UamUserGroup
         if (!$this->isValidObjectType($sObjectType)) {
             return null;
         }
-        
+
         if ($this->_iId == null || $sType != 'real' && $sType != 'full') {
             return array();
         }
-        
+
         if (isset($this->_aObjects[$sObjectType])
             && isset($this->_aObjects[$sObjectType][$sType])
             && $this->_aObjects[$sObjectType][$sType] != -1
@@ -723,12 +723,12 @@ class UamUserGroup
 
         foreach ($aObjectIds as $sObjectId) {
             $oObject = $this->_getSingleObject($sObjectType, $sObjectId, $sType);
-            
+
             if ($oObject !== null) {
                 $this->_aObjects[$sObjectType][$sType][$oObject->id] = $oObject;
             }
         }
-        
+
         if ($sType == 'full' && $this->getAccessHandler()->isPostableType($sObjectType) && $sObjectType != 'role') {
             if ($sObjectType == 'category') {
                 $this->_aObjects[$sObjectType][$sType] = $this->getFullCategories($this->_aObjects[$sObjectType][$sType]);
@@ -742,17 +742,17 @@ class UamUserGroup
                 );
             }
         }
-        
+
         return $this->_aObjects[$sObjectType][$sType];
     }
-    
+
     /**
      * Returns a single object.
-     * 
+     *
      * @param string  $sObjectType The object type.
      * @param integer $iObjectId   The _iId of the object which should be checked.
      * @param string  $sType       The return type. Can be real or full.
-     * 
+     *
      * @return object
      */
     protected function _getSingleObject($sObjectType, $iObjectId, $sType)
@@ -792,32 +792,32 @@ class UamUserGroup
         return $this->_aSingleObjects[$sObjectType][$iObjectId];
     }
 
-    
+
     /*
      * Group users functions.
      */
-    
+
     /**
      * Returns a single user.
-     * 
+     *
      * @param integer $iObjectId The object _iId.
-     * 
+     *
      * @return object
      */
     protected function _getFullUser($iObjectId)
     {
         $aIsRecursiveMember = array();
-        
+
         global $wpdb;
-        
+
         $oCurUserData = get_userdata($iObjectId);
-        
+
         if (isset($oCurUserData->{$wpdb->prefix . "capabilities"})) {
             $aCapabilities = $oCurUserData->{$wpdb->prefix . "capabilities"};
         } else {
             $aCapabilities = array();
         }
-        
+
         $aRole = (count($aCapabilities) > 0) ? array_keys($aCapabilities) : array('norole');
         $sRole = $aRole[0];
         $aObjects = $this->getObjectsFromType('role');
@@ -825,17 +825,17 @@ class UamUserGroup
         if (isset($aObjects[$sRole])) {
             $oRoleObject = new stdClass();
             $oRoleObject->name = $sRole;
-            
+
             $aIsRecursiveMember = array('role' => array());
             $aIsRecursiveMember['role'][] = $oRoleObject;
         }
 
         return $aIsRecursiveMember;
     }
-    
+
     /**
      * Returns the users in the group
-     * 
+     *
      * @return array
      */
     public function getFullUsers()
@@ -872,17 +872,17 @@ class UamUserGroup
 
         return $aFullUsers;
     }
-    
+
 
     /*
      * Group categories functions.
      */
-    
+
     /**
      * Returns a single category.
-     * 
+     *
      * @param integer $iObjectId The object _iId.
-     * 
+     *
      * @return object
      */
     protected function _getFullCategory($iObjectId)
@@ -890,7 +890,7 @@ class UamUserGroup
         $oCategory = $this->getAccessHandler()->getUserAccessManager()->getCategory($iObjectId);
 
         $aIsRecursiveMember = array();
-        
+
         $oUserAccessManager = $this->getAccessHandler()->getUserAccessManager();
         $aUamOptions = $oUserAccessManager->getAdminOptions();
 
@@ -914,12 +914,12 @@ class UamUserGroup
 
         return $aIsRecursiveMember;
     }
-    
+
     /**
      * Returns the categories in the group
-     * 
+     *
      * @param array $aCategories The real categories.
-     * 
+     *
      * @return array
      */
     public function getFullCategories($aCategories)
@@ -932,57 +932,57 @@ class UamUserGroup
                 if ($aUamOptions['lock_recursive'] == 'true') {
                     //We have to remove the filter to get all categories
                     $blRemoveSuccess = remove_filter(
-                    	'get_terms', 
+                    	'get_terms',
                         array(
-                            $this->getAccessHandler()->getUserAccessManager(), 
+                            $this->getAccessHandler()->getUserAccessManager(),
                             'showCategory'
                         )
                     );
-                    
+
                     if ($blRemoveSuccess) {
                         $aArgs = array(
                             'child_of' => $oCategory->id,
                             'hide_empty' => false
                         );
-                        
+
                         $aCategoryChildren = get_categories($aArgs);
-                        
+
                         add_filter(
-                        	'get_terms', 
+                        	'get_terms',
                             array($aUserAccessManager, 'showCategory')
                         );
-                        
-                        
+
+
                         foreach ($aCategoryChildren as $oCategoryChild) {
                             $oCurCategoryChild = new stdClass();
                             $oCurCategoryChild->id = $oCategoryChild->term_id;
                             $oCurCategoryChild->name = $oCategoryChild->name;
-                            
+
                             $oCurCategoryChild->recursiveMember = array('category' => array());
                             $oCurCategoryChild->recursiveMember['category'][] = $oCurCategoryChild;
                             $aCategories[$oCurCategoryChild->id] = $oCurCategoryChild;
                         }
                     }
                 }
-            
+
                 $aCategories[$oCategory->id] = $oCategory;
             }
         }
-        
+
         return $aCategories;
     }
-    
-    
+
+
     /*
      * Group posts functions.
      */
 
     /**
-     * Checks if the give post in the give category. 
-     * 
+     * Checks if the give post in the give category.
+     *
      * @param integer $iPostId     The post _iId.
      * @param integer $iCategoryId The category _iId.
-     * 
+     *
      * @return boolean
      */
     protected function _isPostInCategory($iPostId, $iCategoryId)
@@ -1024,13 +1024,13 @@ class UamUserGroup
         return (isset($this->_aObjectsInCategory[$iPostId])
             &&  isset($this->_aObjectsInCategory[$iPostId][$iCategoryId]));
     }
-    
+
     /**
      * Returns the membership of a single post.
-     * 
+     *
      * @param string  $sPostType The post type needed for the intern representation.
      * @param integer $iObjectId The object _iId.
-     * 
+     *
      * @return object
      */
     protected function _getFullPost($sPostType, $iObjectId)
@@ -1043,11 +1043,11 @@ class UamUserGroup
             if ($this->_isPostInCategory($oPost->ID, $oCategory->id)) {
                 $oCategoryObject = $this->getAccessHandler()->getUserAccessManager()->getCategory($oCategory->id);
                 $oCategory->name = $oCategoryObject->name;
-                
+
                 $aIsRecursiveMember['category'][] = $oCategory;
             }
         }
-        
+
         if ($oPost->post_parent == 0
             && $oPost->post_type == 'post'
             && $this->getAccessHandler()->getUserAccessManager()->getWpOption('show_on_front') == 'page'
@@ -1062,13 +1062,13 @@ class UamUserGroup
         	&& $aUamOptions['lock_recursive'] == 'true'
         ) {
             $oParent = $this->getAccessHandler()->getUserAccessManager()->getPost($iParentId);
-            
+
             $oParentPost = $this->_getSingleObject(
                 $oParent->post_type,
                 $iParentId,
                 'full'
             );
-    
+
             if ($oParentPost !== null) {
                 $oPostObject = $this->getAccessHandler()->getUserAccessManager()->getPost($oParentPost->id);
                 $oParentPost->name = $oPostObject->post_title;
@@ -1080,25 +1080,25 @@ class UamUserGroup
         return $aIsRecursiveMember;
     }
 
-    
+
     /*
      * Group pluggable _aObjects functions.
      */
-    
+
     /**
      * Returns a the recursive membership for a pluggable object.
-     * 
+     *
      * @param string  $sObjectType The pluggable object type.
      * @param integer $iObjectId   The object _iId.
-     * 
+     *
      * @return array
      */
     protected function _getFullPlObject($sObjectType, $iObjectId)
     {
         $blIsRecursiveMember = array();
-        
+
         $oPlObject = $this->getAccessHandler()->getPlObject($sObjectType);
-        
+
         if (isset($oPlObject['reference'])
             && isset($oPlObject['getFull'])
         ) {
@@ -1106,7 +1106,7 @@ class UamUserGroup
                 $iObjectId,
                 $this
             );
-            
+
             if (is_array($aPlRecMember)) {
                 $blIsRecursiveMember = $aPlRecMember;
             }

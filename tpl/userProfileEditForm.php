@@ -1,11 +1,11 @@
 <?php
 /**
  * userProfileEditForm.php
- * 
+ *
  * Shows the additional content for the user profile edit form.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -17,13 +17,13 @@
 
 global $oUserAccessManager, $wpdb;
 $aUamUserGroups = $oUserAccessManager->getAccessHandler()->getUserGroups();
-    
+
 $sObjectType = 'user';
 
 if (isset($_GET['user_id'])) {
     $iObjectId = $_GET['user_id'];
     $oEditUserData = get_userdata($iObjectId);
-    
+
     $aUserGroupsForObject = $oUserAccessManager->getAccessHandler()->getUserGroupsForObject(
         $sObjectType,
         $iObjectId

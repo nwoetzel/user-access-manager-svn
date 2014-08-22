@@ -1,11 +1,11 @@
 <?php
 /**
  * groupSelectionForm.php
- * 
+ *
  * Shows the selection form.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -27,7 +27,7 @@ if (!isset($sGroupsFormName)
 foreach ($aUamUserGroups as $oUamUserGroup) {
     $sAddition = '';
     $sAttributes = '';
-    
+
     if (isset($aUserGroupsForObject[$oUamUserGroup->getId()])) {
         $sAttributes .= 'checked="checked" ';
 
@@ -36,9 +36,9 @@ foreach ($aUamUserGroups as $oUamUserGroup) {
             $sAddition .= ' [LR]';
         }
     }
-    
 
-    
+
+
 	?>
 	<li>
         <input type="checkbox" id="<?php echo $sGroupsFormName; ?>-<?php echo $oUamUserGroup->getId(); ?>" <?php echo $sAttributes;?> value="<?php echo $oUamUserGroup->getId(); ?>" name="<?php echo $sGroupsFormName; ?>[]" />

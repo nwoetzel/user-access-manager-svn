@@ -1,11 +1,11 @@
 <?php
 /**
  * postEditFrom.php
- * 
+ *
  * Shows the setup page at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>

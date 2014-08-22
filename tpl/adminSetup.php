@@ -1,11 +1,11 @@
 <?php
 /**
  * adminSetup.php
- * 
+ *
  * Shows the setup page at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -23,27 +23,27 @@ if (isset($_POST['action'])) {
 }
 
 if ($sPostAction == 'update_db') {
-    if (empty($_POST) 
+    if (empty($_POST)
         || !wp_verify_nonce($_POST['uamSetupUpdateNonce'], 'uamSetupUpdate')
     ) {
          wp_die(TXT_UAM_NONCE_FAILURE);
     }
-    
+
     if (isset($_POST['uam_update_db'])) {
         $sUpdate = $_POST['uam_update_db'];
     } else {
         $sUpdate = null;
     }
-    
+
     if ($sUpdate == 'true'
     	|| $sUpdate == 'network'
     ) {
         $mNetwork = false;
-        
+
         if ($sUpdate == 'network') {
             $mNetwork = true;
         }
-        
+
         $oUserAccessManager->update($mNetwork);
         ?>
     	<div class="updated">
@@ -54,18 +54,18 @@ if ($sPostAction == 'update_db') {
 }
 
 if ($sPostAction == 'reset_uam') {
-    if (empty($_POST) 
+    if (empty($_POST)
         || !wp_verify_nonce($_POST['uamSetupResetNonce'], 'uamSetupReset')
     ) {
          wp_die(TXT_UAM_NONCE_FAILURE);
     }
-    
+
     if (isset($_POST['uam_reset'])) {
         $sReset = $_POST['uam_reset'];
     } else {
         $sReset = null;
     }
-    
+
     if ($sReset == 'true') {
         $oUserAccessManager = new UserAccessManager();
         $oUserAccessManager->uninstall();
@@ -79,7 +79,7 @@ if ($sPostAction == 'reset_uam') {
 }
 ?>
 
-<div class="wrap"> 
+<div class="wrap">
     <h2><?php echo TXT_UAM_SETUP; ?></h2>
     <table class="form-table">
     	<tbody>
@@ -89,13 +89,13 @@ if ($sPostAction == 'reset_uam') {
         			<form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
                         <?php wp_nonce_field('uamSetupReset', 'uamSetupResetNonce'); ?>
     					<input type="hidden" value="reset_uam" name="action" />
-        				<label for="uam_reset_yes"> 
-        					<input type="radio" id="uam_reset_yes" class="uam_reset_yes" name="uam_reset" value="true" /> 
-        					<?php echo TXT_UAM_YES; ?> 
+        				<label for="uam_reset_yes">
+        					<input type="radio" id="uam_reset_yes" class="uam_reset_yes" name="uam_reset" value="true" />
+        					<?php echo TXT_UAM_YES; ?>
         				</label>&nbsp;&nbsp;&nbsp;&nbsp;
-        				<label for="uam_reset_no"> 
-        					<input type="radio" id="uam_reset_no" class="uam_reset_no" name="uam_reset" value="false" checked="checked" /> 
-        					<?php echo TXT_UAM_NO; ?> 
+        				<label for="uam_reset_no">
+        					<input type="radio" id="uam_reset_no" class="uam_reset_no" name="uam_reset" value="false" checked="checked" />
+        					<?php echo TXT_UAM_NO; ?>
         				</label>&nbsp;&nbsp;&nbsp;&nbsp;
         				<input type="submit" class="button" name="uam_reset_submit" value="<?php echo TXT_UAM_RESET; ?>" /> <br />
         				<p style="color: red; font-size: 12px; font-weight: bold;">
@@ -104,7 +104,7 @@ if ($sPostAction == 'reset_uam') {
         			</form>
     			</td>
     		</tr>
-    		<?php 
+    		<?php
 if ($oUserAccessManager->isDatabaseUpdateNecessary()) {
         		?>
         		<tr valign="top">
@@ -113,7 +113,7 @@ if ($oUserAccessManager->isDatabaseUpdateNecessary()) {
     					<input type="hidden" value="update_db" name="action" />
             			<th scope="row"><?php echo TXT_UAM_UPDATE_UAM_DB; ?></th>
             			<td>
-	<?php 
+	<?php
     if (is_super_admin()) {
 	    ?>
                             <input type="radio" id="uam_update_db_network" class="uam_reset_yes" name="uam_update_db" value="network" />
@@ -123,13 +123,13 @@ if ($oUserAccessManager->isDatabaseUpdateNecessary()) {
 	?>
                             <input type="radio" id="uam_update_db_yes" class="uam_reset_yes" name="uam_update_db" value="true" />
             				<label for="uam_update_db_yes">
-	<?php 
-	if (is_super_admin()) { 
-	    echo TXT_UAM_UPDATE_BLOG; 
-	} else { 
-	    echo TXT_UAM_YES; 
-	} 
-	?> 
+	<?php
+	if (is_super_admin()) {
+	    echo TXT_UAM_UPDATE_BLOG;
+	} else {
+	    echo TXT_UAM_YES;
+	}
+	?>
             				</label>&nbsp;&nbsp;&nbsp;&nbsp;
                             <input type="radio" id="uam_update_db_no" class="uam_reset_no" name="uam_update_db" value="false" checked="checked" />
                             <label for="uam_update_db_no"><?php echo TXT_UAM_NO; ?></label>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -140,7 +140,7 @@ if ($oUserAccessManager->isDatabaseUpdateNecessary()) {
             			</td>
             		</form>
         		</tr>
-        		<?php 
+        		<?php
 }
         	?>
     	</tbody>

@@ -1,11 +1,11 @@
 <?php
 /**
  * UamAccessHandler.class.php
- * 
+ *
  * The UamUserGroup class file.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -17,7 +17,7 @@
 
 /**
  * The access handler class.
- * 
+ *
  * @category UserAccessManager
  * @package  UserAccessManager
  * @author   Alexander Schneider <alexanderschneider85@gmail.com>
@@ -50,18 +50,18 @@ class UamAccessHandler
     protected $_aAllObjectTypesMap = null;
     protected $_aSqlResults = array();
     protected $_aValidObjectTypes = array();
-    
+
     /**
      * The constructor
-     * 
+     *
      * @param UserAccessManager $oUserAccessManager The user access manager object.
      */
     public function __construct(UserAccessManager &$oUserAccessManager)
     {
         $this->_oUserAccessManager = $oUserAccessManager;
-        
+
         $aPostTypes = get_post_types(array(), 'objects');
-        
+
         foreach ($aPostTypes as $oPostType) {
             if ($oPostType->publicly_queryable) {
                 $this->_aPostableTypes[] = $oPostType->name;
@@ -69,7 +69,7 @@ class UamAccessHandler
         }
 
         $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
-        
+
         $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
     }
 
@@ -84,40 +84,40 @@ class UamAccessHandler
     {
         return isset($this->_aPostableTypesMap[$sType]);
     }
-    
+
     /**
      * Returns the user access manager object.
-     * 
+     *
      * @return UserAccessManager
      */
     public function &getUserAccessManager()
     {
         return $this->_oUserAccessManager;
     }
-    
+
     /**
      * Returns the predefined object types.
-     * 
+     *
      * @return array
      */
     public function getObjectTypes()
     {
         return $this->_aObjectTypes;
     }
-    
+
     /**
      * Returns the predefined object types.
-     * 
+     *
      * @return array;
      */
     public function getPostableTypes()
     {
         return $this->_aPostableTypes;
     }
-    
+
     /**
      * Returns all objects types.
-     * 
+     *
      * @return array
      */
     public function getAllObjectTypes()
@@ -130,7 +130,7 @@ class UamAccessHandler
                 array_keys($aPlObjects)
             );
         }
-        
+
         return $this->_aAllObjectTypes;
     }
 
@@ -147,13 +147,13 @@ class UamAccessHandler
 
         return $this->_aAllObjectTypesMap;
     }
-    
+
     /**
      * Magic method getter.
-     * 
+     *
      * @param string $sName      The name of the function
      * @param array  $aArguments The arguments for the function
-     * 
+     *
      * @return mixed
      */
     public function __call($sName, $aArguments)
@@ -181,33 +181,33 @@ class UamAccessHandler
 
         return null;
     }
-    
+
     /**
      * Filter the user groups of an object if authors_can_add_posts_to_groups
      * option is enabled
-     * 
+     *
      * @param UamUserGroup[] $aUserGroups The user groups.
-     * 
+     *
      * @return array
      */
     protected function _filterUserGroups($aUserGroups)
     {
         $aUamOptions = $this->getUserAccessManager()->getAdminOptions();
-        
+
         if ($aUamOptions['authors_can_add_posts_to_groups'] == 'true'
         	&& !$this->checkUserAccess('manage_user_groups')
         	&& $this->getUserAccessManager()->atAdminPanel()
         ) {
             $oCurrentUser = $this->getUserAccessManager()->getCurrentUser();
             $aUserGroupsForUser = $this->getUserGroupsForObject('user', $oCurrentUser->ID);
-            
+
             foreach ($aUserGroups as $sKey => $oUamUserGroup) {
                 if (!isset($aUserGroupsForUser[$oUamUserGroup->getId()])) {
                     unset($aUserGroups[$sKey]);
                 }
             }
         }
-        
+
         return $aUserGroups;
     }
 
@@ -232,13 +232,13 @@ class UamAccessHandler
 
         return $this->_aValidObjectTypes[$sObjectType];
     }
-    
+
     /**
      * Returns all user groups or one requested by the user group id.
-     * 
+     *
      * @param integer $iUserGroupId The id of the single user group which should be returned.
      * @param boolean $blFilter     Filter the groups.
-     * 
+     *
      * @return UamUserGroup[]|UamUserGroup
      */
     public function getUserGroups($iUserGroupId = null, $blFilter = true)
@@ -248,7 +248,7 @@ class UamAccessHandler
         } else {
             $sFilterAttr = 'noneFiltered';
         }
-        
+
         if ($iUserGroupId === null
             && $this->_aUserGroups[$sFilterAttr] != array()
         ) {
@@ -262,7 +262,7 @@ class UamAccessHandler
                 return null;
             }
         }
-        
+
         $this->_aUserGroups[$sFilterAttr] = array();
 
         /**
@@ -275,18 +275,18 @@ class UamAccessHandler
         	FROM " . DB_ACCESSGROUP . "
         	ORDER BY ID", ARRAY_A
         );
-        
+
         if (isset($aUserGroupsDb)) {
             foreach ($aUserGroupsDb as $aUserGroupDb) {
                 $this->_aUserGroups[$sFilterAttr][$aUserGroupDb['ID']] = new UamUserGroup($this, $aUserGroupDb['ID']);
             }
         }
-        
+
         //Filter the user groups
         if ($blFilter) {
             $this->_aUserGroups[$sFilterAttr] = $this->_filterUserGroups($this->_aUserGroups[$sFilterAttr]);
         }
-        
+
         if ($iUserGroupId == null) {
             if (isset($this->_aUserGroups[$sFilterAttr])) {
                 return $this->_aUserGroups[$sFilterAttr];
@@ -301,12 +301,12 @@ class UamAccessHandler
             return null;
         }
     }
-    
+
     /**
      * Adds a user group.
-     * 
+     *
      * @param UamUserGroup $oUserGroup The user group which we want to add.
-     * 
+     *
      * @return null
      */
     public function addUserGroup($oUserGroup)
@@ -315,12 +315,12 @@ class UamAccessHandler
         $this->_aUserGroups['noneFiltered'][$oUserGroup->getId()] = $oUserGroup;
         $this->_aUserGroups['filtered'] = array();
     }
-    
+
     /**
      * Deletes a user group.
-     * 
+     *
      * @param integer $iUserGroupId The user group _iId which we want to delete.
-     * 
+     *
      * @return null
      */
     public function deleteUserGroup($iUserGroupId)
@@ -331,14 +331,14 @@ class UamAccessHandler
             $this->_aUserGroups['filtered'] = array();
         }
     }
-    
+
     /**
      * Returns the user groups for the given object.
-     * 
+     *
      * @param string  $sObjectType The object type.
      * @param integer $iObjectId   The _iId of the object.
      * @param boolean $blFilter    Filter the groups.
-     * 
+     *
      * @return UamUserGroup[]
      */
     public function getUserGroupsForObject($sObjectType, $iObjectId, $blFilter = true)
@@ -346,11 +346,11 @@ class UamAccessHandler
         if (!$this->isValidObjectType($sObjectType)) {
             return array();
         }
-        
+
         if ($sObjectType == 'user') {
             $blFilter = false;
         }
-        
+
         if ($blFilter) {
             $sFilterAttr = 'filtered';
         } else {
@@ -400,23 +400,23 @@ class UamAccessHandler
         $this->_aObjectUserGroups[$sObjectType][$sFilterAttr][$iObjectId] = $aObjectUserGroups;
         return $this->_aObjectUserGroups[$sObjectType][$sFilterAttr][$iObjectId];
     }
-    
+
     /**
      * Unset the user groups for _aObjects.
-     * 
+     *
      * @return null
      */
     public function unsetUserGroupsForObject()
     {
         $this->_aObjectUserGroups = array();
     }
-    
+
     /**
      * Checks if the current_user has access to the given post.
-     * 
+     *
      * @param string  $sObjectType The object type which should be checked.
      * @param integer $iObjectId   The _iId of the object.
-     * 
+     *
      * @return boolean
      */
     public function checkObjectAccess($sObjectType, $iObjectId)
@@ -424,7 +424,7 @@ class UamAccessHandler
         if (!$this->isValidObjectType($sObjectType)) {
             return true;
         }
-        
+
         if (isset($this->_aObjectAccess[$sObjectType][$iObjectId])) {
             return $this->_aObjectAccess[$sObjectType][$iObjectId];
         }
@@ -437,10 +437,10 @@ class UamAccessHandler
         } else {
             $sAuthorId = -1;
         }
-        
+
         $aUamOptions = $this->getUserAccessManager()->getAdminOptions();
         $aMembership = $this->getUserGroupsForObject($sObjectType, $iObjectId, false);
-        
+
         if ($aMembership == array()
             || $this->checkUserAccess('manage_user_groups')
             || $oCurrentUser->ID == $sAuthorId
@@ -448,38 +448,38 @@ class UamAccessHandler
         ) {
             return $this->_aObjectAccess[$sObjectType][$iObjectId] = true;
         }
-        
+
         $aCurIp = explode(".", $_SERVER['REMOTE_ADDR']);
-        
+
         foreach ($aMembership as $sKey => $oUserGroup) {
             if ($this->checkUserIp($aCurIp, $oUserGroup->getIpRange())
                 || $oUserGroup->objectIsMember('user', $oCurrentUser->ID)
             ) {
                 return $this->_aObjectAccess[$sObjectType][$iObjectId] = true;
             }
-            
+
             if ($this->getUserAccessManager()->atAdminPanel() && $oUserGroup->getWriteAccess() == 'all'
             	|| !$this->getUserAccessManager()->atAdminPanel() && $oUserGroup->getReadAccess() == 'all'
             ) {
                 unset($aMembership[$sKey]);
             }
         }
-        
+
         if ($aMembership == array()) {
             return $this->_aObjectAccess[$sObjectType][$iObjectId] = true;
         }
-        
+
         return $this->_aObjectAccess[$sObjectType][$iObjectId] = false;
     }
-    
-    
+
+
     /*
      * SQL functions.
      */
-    
+
     /**
      * Returns the user groups for the current user as sql string.
-     * 
+     *
      * @return string
      */
     protected function _getUserGroupsForUserAsSqlString()
@@ -491,24 +491,24 @@ class UamAccessHandler
         $oCurrentUser = $this->getUserAccessManager()->getCurrentUser();
         $aUserUserGroups = $this->getUserGroupsForObject('user', $oCurrentUser->ID, false);
         $aUserUserGroupIds = array();
-        
+
         foreach ($aUserUserGroups as $oUserUserGroup) {
             $aUserUserGroupIds[] = $oUserUserGroup->getId();
         }
-        
+
         if ($aUserUserGroupIds !== array()) {
             $sUserUserGroups = implode(', ', $aUserUserGroupIds);
         } else {
             $sUserUserGroups = "''";
         }
-        
+
         $this->_aSqlResults['groupsForUser'] = $sUserUserGroups;
         return $this->_aSqlResults['groupsForUser'];
     }
-    
+
     /**
      * Returns the categories assigned to the user.
-     * 
+     *
      * @return array
      */
     public function getCategoriesForUser()
@@ -517,26 +517,26 @@ class UamAccessHandler
          * @var wpdb $wpdb
          */
         global $wpdb;
-        
+
         if (isset($this->_aSqlResults['categoriesAssignedToUser'])) {
             return $this->_aSqlResults['categoriesAssignedToUser'];
         }
-        
+
         $sUserUserGroups = $this->_getUserGroupsForUserAsSqlString();
-        
+
         $sCategoriesAssignedToUserSql = "
-        	SELECT igc.object_id  
+        	SELECT igc.object_id
     		FROM ".DB_ACCESSGROUP_TO_OBJECT." AS igc
     		WHERE igc.object_type = 'category'
     		AND igc.group_id IN (".$sUserUserGroups.")";
-        
+
         $this->_aSqlResults['categoriesAssignedToUser'] = $wpdb->get_col($sCategoriesAssignedToUserSql);
         return $this->_aSqlResults['categoriesAssignedToUser'];
     }
-    
+
     /**
      * Returns the posts assigned to the user.
-     * 
+     *
      * @return array
      */
     public function getPostsForUser()
@@ -545,27 +545,27 @@ class UamAccessHandler
          * @var wpdb $wpdb
          */
         global $wpdb;
-        
+
         if (isset($this->_aSqlResults['postsAssignedToUser'])) {
             return $this->_aSqlResults['postsAssignedToUser'];
         }
-        
+
         $sUserUserGroup = $this->_getUserGroupsForUserAsSqlString();
         $sPostableTypes = "'".implode("','", $this->getPostableTypes())."'";
-        
+
         $sPostAssignedToUserSql = "
-        	SELECT igp.object_id  
+        	SELECT igp.object_id
         	FROM ".DB_ACCESSGROUP_TO_OBJECT." AS igp
         	WHERE igp.object_type IN (".$sPostableTypes.")
             AND igp.group_id IN (".$sUserUserGroup.")";
-        
+
         $this->_aSqlResults['postsAssignedToUser'] = $wpdb->get_col($sPostAssignedToUserSql);
         return $this->_aSqlResults['postsAssignedToUser'];
     }
-    
+
  	/**
      * Returns the excluded posts.
-     * 
+     *
      * @return array
      */
     public function getExcludedPosts()
@@ -574,15 +574,15 @@ class UamAccessHandler
          * @var wpdb $wpdb
          */
         global $wpdb;
-        
+
         if ($this->checkUserAccess('manage_user_groups')) {
             $this->_aSqlResults['excludedPosts'] = array();
         }
-        
+
         if (isset($this->_aSqlResults['excludedPosts'])) {
             return $this->_aSqlResults['excludedPosts'];
         }
-        
+
         if ($this->getUserAccessManager()->atAdminPanel()) {
             $sAccessType = "write";
         } else {
@@ -590,30 +590,30 @@ class UamAccessHandler
         }
 
         $aCategoriesAssignedToUser = $this->getCategoriesForUser();
-            
+
         if ($aCategoriesAssignedToUser !== array()) {
             $sCategoriesAssignedToUser = implode(', ', $aCategoriesAssignedToUser);
         } else {
             $sCategoriesAssignedToUser = "''";
         }
-        
+
         $aPostAssignedToUser = $this->getPostsForUser();
-        
+
         if ($aPostAssignedToUser !== array()) {
             $sPostAssignedToUser = implode(', ', $aPostAssignedToUser);
         } else {
             $sPostAssignedToUser = "''";
         }
-        
+
         $sPostSql = "SELECT DISTINCT p.ID
-        	FROM $wpdb->posts AS p 
-        	INNER JOIN $wpdb->term_relationships AS tr 
-        		ON p.ID = tr.object_id 
-        	INNER JOIN $wpdb->term_taxonomy tt 
+        	FROM $wpdb->posts AS p
+        	INNER JOIN $wpdb->term_relationships AS tr
+        		ON p.ID = tr.object_id
+        	INNER JOIN $wpdb->term_taxonomy tt
         		ON tr.term_taxonomy_id = tt.term_taxonomy_id
-            WHERE tt.taxonomy = 'category' 
+            WHERE tt.taxonomy = 'category'
     		AND tt.term_id IN (
-    			SELECT gc.object_id 
+    			SELECT gc.object_id
     			FROM ".DB_ACCESSGROUP." iag
     			INNER JOIN ".DB_ACCESSGROUP_TO_OBJECT." AS gc
     				ON iag.id = gc.group_id
@@ -622,34 +622,34 @@ class UamAccessHandler
     			AND gc.object_id  NOT IN (".$sCategoriesAssignedToUser.")
     		) AND p.ID NOT IN (".$sPostAssignedToUser.")
     		UNION
-    		SELECT DISTINCT gp.object_id 
+    		SELECT DISTINCT gp.object_id
     		FROM ".DB_ACCESSGROUP." AS ag
             INNER JOIN ".DB_ACCESSGROUP_TO_OBJECT." AS gp
                 ON ag.id = gp.group_id
-    		INNER JOIN $wpdb->term_relationships AS tr 
-        		ON gp.object_id  = tr.object_id 
-        	INNER JOIN $wpdb->term_taxonomy tt 
+    		INNER JOIN $wpdb->term_relationships AS tr
+        		ON gp.object_id  = tr.object_id
+        	INNER JOIN $wpdb->term_taxonomy tt
         		ON tr.term_taxonomy_id = tt.term_taxonomy_id
     		WHERE gp.object_type = 'post'
     		AND ag.".$sAccessType."_access != 'all'
     		AND gp.object_id  NOT IN (".$sPostAssignedToUser.")
     		AND tt.term_id NOT IN (".$sCategoriesAssignedToUser.")";
-        
+
         $this->_aSqlResults['excludedPosts'] = $wpdb->get_col($sPostSql);
         return $this->_aSqlResults['excludedPosts'];
     }
-    
-    
+
+
     /*
      * Other functions
      */
-    
+
     /**
      * Checks if the given ip matches with the range.
-     * 
+     *
      * @param array $aCurIp    The ip of the current user.
      * @param array $aIpRanges The ip ranges.
-     * 
+     *
      * @return boolean
      */
     public function checkUserIp($aCurIp, $aIpRanges)
@@ -658,13 +658,13 @@ class UamAccessHandler
             foreach ($aIpRanges as $aIpRange) {
                 $aIpRange = explode("-", $aIpRange);
                 $aRangeBegin = explode(".", $aIpRange[0]);
-                
+
                 if (isset($aIpRange[1])) {
                     $aRangeEnd = explode(".", $aIpRange[1]);
                 } else {
                     $aRangeEnd = explode(".", $aIpRange[0]);
                 }
-                
+
                 if ($aRangeBegin[0] <= $aCurIp[0]  && $aCurIp[0] <= $aRangeEnd[0]
                     && $aRangeBegin[1] <= $aCurIp[1] && $aCurIp[1] <= $aRangeEnd[1]
                     && $aRangeBegin[2] <= $aCurIp[2] && $aCurIp[2] <= $aRangeEnd[2]
@@ -674,15 +674,15 @@ class UamAccessHandler
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Return the role of the user.
-     * 
+     *
      * @param integer $iUserId The user _iId.
-     * 
+     *
      * @return string|null
      */
     protected function _getUserRole($iUserId)
@@ -691,41 +691,41 @@ class UamAccessHandler
          * @var wpdb $wpdb
          */
         global $wpdb;
-        
+
         $oUserData = get_userdata($iUserId);
-        
+
         if (!empty($oUserData->user_level) && !isset($oUserData->user_level)) {
             $oUserData->user_level = null;
         }
-        
+
         if (isset($oUserData->{$wpdb->prefix . "capabilities"})) {
             $aCapabilities = $oUserData->{$wpdb->prefix . "capabilities"};
         } else {
             $aCapabilities = array();
         }
-        
+
         $aRole  = (count($aCapabilities) > 0) ? array_keys($aCapabilities) : array('norole');
         return trim($aRole[0]);
     }
-    
+
     /**
      * Checks if the user is an admin user
-     * 
+     *
      * @param integer $iUserId The user _iId.
-     * 
+     *
      * @return boolean
      */
     public function userIsAdmin($iUserId)
     {
         $sRole = $this->_getUserRole($iUserId);
-        
+
         if ($sRole == 'administrator' || is_super_admin($iUserId)) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Checks the user access by user level.
      *
@@ -737,10 +737,10 @@ class UamAccessHandler
     {
         $oCurrentUser = $this->getUserAccessManager()->getCurrentUser();
         $aUamOptions = $this->getUserAccessManager()->getAdminOptions();
-        
+
         $sRole = $this->_getUserRole($oCurrentUser->ID);
         $aOrderedRoles = $this->getRolesOrdered();
-        
+
         if (isset($aOrderedRoles[$sRole])
             && $aOrderedRoles[$sRole] >= $aOrderedRoles[$aUamOptions['full_access_role']]
             || $sRole == 'administrator' || is_super_admin($oCurrentUser->ID)
@@ -748,13 +748,13 @@ class UamAccessHandler
         ) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Returns the roles as associative array.
-     * 
+     *
      * @return array
      */
     public function getRolesOrdered()
@@ -767,15 +767,15 @@ class UamAccessHandler
         	'editor' => 4,
             'administrator' => 5
         );
-        
+
         return $aOrderedRoles;
     }
-    
+
     /**
-     * Registers object that should be handelt by the user access manager.
-     * 
+     * Registers object that should be handled by the user access manager.
+     *
      * @param array $oObject The object which you want to register.
-     * 
+     *
      * @return boolean
      */
     public function registerPlObject($oObject)
@@ -785,17 +785,17 @@ class UamAccessHandler
         ) {
             return false;
         }
-        
+
         $this->_aPlObjects[$oObject['name']] = $oObject;
-        
+
         return true;
     }
-    
+
     /**
      * Returns a registered pluggable object.
-     * 
+     *
      * @param string $sObjectName The name of the object which should be returned.
-     * 
+     *
      * @return array
      */
     public function getPlObject($sObjectName)
@@ -803,13 +803,13 @@ class UamAccessHandler
         if (isset($this->_aPlObjects[$sObjectName])) {
             return $this->_aPlObjects[$sObjectName];
         }
-        
+
         return array();
     }
-    
+
     /**
      * Returns all registered pluggable objects.
-     * 
+     *
      * @return array
      */
     public function getPlObjects()
