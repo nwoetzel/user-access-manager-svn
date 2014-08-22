@@ -22,7 +22,7 @@
 
 //Paths
 load_plugin_textdomain('user-access-manager', false, 'user-access-manager/lang');
-define('UAM_URLPATH', plugins_url('', __FILE__));
+define('UAM_URLPATH', plugins_url('', __FILE__).'/');
 
 if (defined('UAM_LOCAL_DEBUG')) {
     define('UAM_REALPATH', plugin_basename(dirname(__FILE__)).'/'); //ONLY FOR MY LOCAL DEBUG
