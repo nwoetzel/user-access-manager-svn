@@ -38,7 +38,7 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
      *
      * ## EXAMPLES
      *
-     * wp groups list
+     * wp uam groups list
      *
      * @subcommand list
      */
@@ -74,10 +74,12 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
      * delete groups
      *
      * ## OPTIONS
+     * <group_id>
+     * : id of the group(s) to delete; accepts unlimited ids
      *
      * ## EXAMPLES
      *
-     * wp groups del 3 5
+     * wp uam groups del 3 5
      *
      * @subcommand del
      */
@@ -121,7 +123,7 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
      *
      * ## EXAMPLES
      *
-     * wp groups add fighters --read_access=all
+     * wp uam groups add fighters --read_access=all
      *
      */
     public function add( $_, $assoc_args) {
@@ -190,5 +192,133 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
     }
 }
 
+/**
+ * manage objects in the user-access-manager plugin
+ *
+ * @package wp-cli
+ * @subpackage commands/community
+ * @maintainer nwoetzel
+ */
+class Objects_Command extends WP_CLI_Command {
+
+    /**
+     * update groups for an object
+     *
+     * ## OPTIONS
+     *
+     * <operation>
+     * : 'add', 'remove' or 'update'
+     *
+     * <object_type>
+     * : 'page', 'post', 'user', 'role' or 'category'
+     *
+     * <object_id>
+     * : the id of the object
+     *
+     * [--groups=<list>]
+     * : comma seperated list of group names or ids to add,remove of upate to for the object
+     *
+     * ## EXAMPLES
+     *
+     * wp uam object add    user     1 --groups=fighters,loosers
+     * wp uam object remove role     2 --groups=figthers
+     * wp uam object update category 5 --groups=controller
+     *
+     */
+    public function __invoke( $_, $assoc_args) {
+        $sOperation  = $_[0];
+        $sObjectType = $_[1];
+        $iObjectId   = intval( $_[2]);
+
+        // check that operation is valid
+        switch ( $sOperation) {
+            case "add":
+                break;
+            case "update":
+                break;
+            case "remove":
+                break;
+            default:
+                WP_CLI::error( "operation is not valid: " . $sOperation);
+        }
+
+        global $oUserAccessManager;
+        $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
+
+        // groups passes
+        $groups = array_unique( explode( ",", $assoc_args[ 'groups']));
+
+        // convert the string to and associative array of index and group
+        $aAddUserGroups = array();
+        $aUamUserGroups = $oUamAccessHandler->getUserGroups();
+
+        // find the UserGroup object for the ids or strings given on the commandline
+        foreach( $groups as $group) {
+            if( is_numeric( $group)) {
+                $oUamUserGroup = $oUamAccessHandler->getUserGroups( $group);
+                if( !$oUamUserGroup) {
+                    WP_CLI::error( "there is no group with the id: " . $group);
+                }
+                $aAddUserGroups[ $group] = $oUamUserGroup;
+            } else {
+                $found = false;
+                foreach( $aUamUserGroups as $oUamUserGroup) {
+                    if( $oUamUserGroup->getGroupName() == $group) {
+                        $aAddUserGroups[ $oUamUserGroup->getId()] = $oUamUserGroup;
+                        $found = true;
+                        break;
+                    }
+                }
+                if( !$found) {
+                    WP_CLI::error( "there is no group with the name: " . $group);
+                }
+            }
+        }
+
+        $aRemoveUserGroups = $oUamAccessHandler->getUserGroupsForObject($sObjectType, $iObjectId);
+        $blRemoveOldAssignments = true;
+
+        switch ( $sOperation) {
+            case "add":
+                $blRemoveOldAssignments = false;
+                break;
+            case "update":
+                break;
+            case "remove":
+                $aRemoveUserGroups = $aAddUserGroups;
+                $aAddUserGroups = array();
+                break;
+            default:
+                WP_CLI::error( "operation is not valid: " . $sOperation);
+        }
+
+        foreach ($aUamUserGroups as $sGroupId => $oUamUserGroup) {
+            if (isset($aRemoveUserGroups[$sGroupId])) {
+                $oUamUserGroup->removeObject($sObjectType, $iObjectId);
+            }
+
+            if (isset($aAddUserGroups[$sGroupId])) {
+                $oUamUserGroup->addObject($sObjectType, $iObjectId);
+            }
+
+            $oUamUserGroup->save($blRemoveOldAssignments);
+        }
+
+        switch ( $sOperation) {
+            case "add":
+                WP_CLI::success( implode( " ", array( "groups:", $assoc_args[ 'groups'], "sucessfully added to", $sObjectType, $iObjectId)));
+                break;
+            case "update":
+                WP_CLI::success( implode( " ", array( "sucessfully updated", $sObjectType, $iObjectId, "with groups:", $assoc_args[ 'groups'])));
+                break;
+            case "remove":
+                WP_CLI::success( implode( " ", array( "sucessfully removed groups:", $assoc_args[ 'groups'], "from", $sObjectType, $iObjectId)));
+                break;
+            default:
+        }
+    }
+}
+
 // add the command
-WP_CLI::add_command( 'uam groups', 'Groups_Command' );
+WP_CLI::add_command( 'uam groups', 'Groups_Command'  );
+WP_CLI::add_command( 'uam objects', 'Objects_Command' );
