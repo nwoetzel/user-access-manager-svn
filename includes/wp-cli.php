@@ -16,6 +16,7 @@ if (!defined('ABSPATH')) {
  * @maintainer nwoetzel
  */
 class Groups_Command extends \WP_CLI\CommandWithDBObject {
+    private static $aAllowedAccessValues = array( "group", "all");
 
     protected $obj_type = 'uam_accessgroup';
     protected $obj_fields = array(
@@ -148,18 +149,18 @@ class Groups_Command extends \WP_CLI\CommandWithDBObject {
 
         $oUamUserGroup = new UamUserGroup($oUserAccessManager->getAccessHandler(), null);
 
-        if( $read_access == null || ( $read_access != 'all' || $read_access != 'group')) {
+        if( !in_array( $read_access, self::$aAllowedAccessValues)) {
             if( !$porcelain) {
-                WP_CLI::line( "setting read_access to 'group'");
+                WP_CLI::line( "setting read_access to ".self::$aAllowedAccessValues[0]);
             }
-            $read_access = 'group';
+            $read_access = self::$aAllowedAccessValues[0];
         }
 
-        if( $write_access == null || ( $write_access != 'all' || $write_access != 'group')) {
+        if( !in_array( $write_access, self::$aAllowedAccessValues)) {
             if( !$porcelain) {
-                WP_CLI::line( "setting write_access to 'group'");
+                WP_CLI::line( "setting write_access to ".self::$aAllowedAccessValues[0]);
             }
-            $write_access = 'group';
+            $write_access = self::$aAllowedAccessValues[0];
         }
 
         $oUamUserGroup->setGroupName(   $groupname);
@@ -213,22 +214,22 @@ class Objects_Command extends WP_CLI_Command {
      * : 'page', 'post', 'user', 'role' or 'category'
      *
      * <object_id>
-     * : the id of the object
+     * : the id of the object (string for role)
      *
      * [--groups=<list>]
      * : comma seperated list of group names or ids to add,remove of upate to for the object
      *
      * ## EXAMPLES
      *
-     * wp uam object add    user     1 --groups=fighters,loosers
-     * wp uam object remove role     2 --groups=figthers
-     * wp uam object update category 5 --groups=controller
+     * wp uam object add    user     1      --groups=fighters,loosers
+     * wp uam object remove role     author --groups=figthers
+     * wp uam object update category 5      --groups=controller
      *
      */
     public function __invoke( $_, $assoc_args) {
         $sOperation  = $_[0];
         $sObjectType = $_[1];
-        $iObjectId   = intval( $_[2]);
+        $sObjectId   = $_[2];
 
         // check that operation is valid
         switch ( $sOperation) {
@@ -275,7 +276,7 @@ class Objects_Command extends WP_CLI_Command {
             }
         }
 
-        $aRemoveUserGroups = $oUamAccessHandler->getUserGroupsForObject($sObjectType, $iObjectId);
+        $aRemoveUserGroups = $oUamAccessHandler->getUserGroupsForObject($sObjectType, $sObjectId);
         $blRemoveOldAssignments = true;
 
         switch ( $sOperation) {
@@ -294,11 +295,11 @@ class Objects_Command extends WP_CLI_Command {
 
         foreach ($aUamUserGroups as $sGroupId => $oUamUserGroup) {
             if (isset($aRemoveUserGroups[$sGroupId])) {
-                $oUamUserGroup->removeObject($sObjectType, $iObjectId);
+                $oUamUserGroup->removeObject($sObjectType, $sObjectId);
             }
 
             if (isset($aAddUserGroups[$sGroupId])) {
-                $oUamUserGroup->addObject($sObjectType, $iObjectId);
+                $oUamUserGroup->addObject($sObjectType, $sObjectId);
             }
 
             $oUamUserGroup->save($blRemoveOldAssignments);
@@ -306,13 +307,13 @@ class Objects_Command extends WP_CLI_Command {
 
         switch ( $sOperation) {
             case "add":
-                WP_CLI::success( implode( " ", array( "groups:", $assoc_args[ 'groups'], "sucessfully added to", $sObjectType, $iObjectId)));
+                WP_CLI::success( implode( " ", array( "groups:", $assoc_args[ 'groups'], "sucessfully added to", $sObjectType, $sObjectId)));
                 break;
             case "update":
-                WP_CLI::success( implode( " ", array( "sucessfully updated", $sObjectType, $iObjectId, "with groups:", $assoc_args[ 'groups'])));
+                WP_CLI::success( implode( " ", array( "sucessfully updated", $sObjectType, $sObjectId, "with groups:", $assoc_args[ 'groups'])));
                 break;
             case "remove":
-                WP_CLI::success( implode( " ", array( "sucessfully removed groups:", $assoc_args[ 'groups'], "from", $sObjectType, $iObjectId)));
+                WP_CLI::success( implode( " ", array( "sucessfully removed groups:", $assoc_args[ 'groups'], "from", $sObjectType, $sObjectId)));
                 break;
             default:
         }
