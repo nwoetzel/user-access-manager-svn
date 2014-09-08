@@ -1,11 +1,11 @@
 <?php
 /**
  * objectColumn.php
- * 
+ *
  * Shows the setup page at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -27,14 +27,14 @@ if ($aUamUserGroups != array()) {
 	<ul>
     <?php
     foreach ($aUamUserGroups as $oUamUserGroup) {
-        ?> 
+        ?>
     	<li>
     	    <a class="uam_group_info_link">
     		    <?php echo $oUamUserGroup->getGroupName(); ?>
     		</a>
         <?php
         include 'groupInfo.php';
-        ?> 
+        ?>
         </li>
         <?php
     }

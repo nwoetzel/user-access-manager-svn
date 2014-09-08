@@ -1,11 +1,11 @@
 <?php
 /**
  * bulkEditForm.php
- * 
+ *
  * Shows the bulk edit form at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>

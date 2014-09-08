@@ -1,11 +1,11 @@
 <?php
 /**
  * categoryEditForm.php
- * 
+ *
  * Shows the setup page at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -23,7 +23,7 @@ $sObjectType = 'category';
 
 if (isset($_GET['tag_ID'])) {
     $iObjectId = $_GET['tag_ID'];
-    
+
     $aUserGroupsForObject = $oUserAccessManager->getAccessHandler()->getUserGroupsForObject(
         $sObjectType,
         $iObjectId
@@ -31,7 +31,7 @@ if (isset($_GET['tag_ID'])) {
 } else {
     $aUserGroupsForObject = array();
 }
-    
+
 ?>
 <table class="form-table">
 	<tbody>

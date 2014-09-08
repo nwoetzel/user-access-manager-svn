@@ -1101,8 +1101,7 @@ class UserAccessManager
      */
     public function addPostColumnsHeader($aDefaults)
     {
-        $aDefaults['uam_access'] = __('Access', 'user-access-manager');
-        return $aDefaults;
+        return $aDefaults['uam_access'] = __('Access', 'user-access-manager');
     }
 
     /**
@@ -1244,8 +1243,7 @@ class UserAccessManager
      */
     public function addUserColumnsHeader($aDefaults)
     {
-        $aDefaults['uam_access'] = __('uam user groups');
-        return $aDefaults;
+        return $aDefaults['uam_access'] = __('uam user groups');
     }
 
     /**
@@ -1305,7 +1303,7 @@ class UserAccessManager
         $wpdb->delete(
         	DB_ACCESSGROUP_TO_OBJECT,
             array(
-                    'object_id' ''=> $iUserId,
+                    'object_id'   => $iUserId,
                     'object_type' => 'user'
             ),
             array( '%d', '%s')
@@ -2308,7 +2306,7 @@ class UserAccessManager
          */
         global $wpdb;
 
-        $oDbPost = $wpdb->get_row( $wpdb->prepare()
+        $oDbPost = $wpdb->get_row( $wpdb->prepare(
         	"SELECT ID
 			FROM %sposts
 			WHERE guid = '%s'",
