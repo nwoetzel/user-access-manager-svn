@@ -128,20 +128,38 @@ if (!function_exists("userAccessManagerAP")) {
         if ($oUamAccessHandler->checkUserAccess()
             || $aUamOptions['authors_can_add_posts_to_groups'] == 'true'
         ) {
-            //Admin actions
-            if (function_exists('add_action')) {
+            //Admin actions and filters
+            if (function_exists('add_action') && function_exists('add_filter')) {
+                // add the user access columns to posts, pages and users
+                // user
+                add_filter('manage_users_columns', array($oUserAccessManager, 'addUserColumnsHeader'), 10);
+                add_filter('manage_users_custom_column', array($oUserAccessManager, 'addUserColumn'), 10, 3);
+
+                // posts
+                add_action('manage_posts_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
+                add_filter('manage_posts_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
+
+                // pages
+                add_action('manage_pages_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
+                add_filter('manage_pages_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
+
+                // media
+                add_action('manage_media_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
+                if ($aUamOptions['lock_file'] == 'true') {
+                    add_action('media_meta', array($oUserAccessManager, 'showMediaFile'), 10, 2);
+                    add_filter('manage_media_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
+                }
+
                 add_action('admin_print_styles', array($oUserAccessManager, 'addStyles'));
                 add_action('wp_print_scripts', array($oUserAccessManager, 'addScripts'));
 
-                add_action('manage_posts_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
-                add_action('manage_pages_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
                 add_action('save_post', array($oUserAccessManager, 'savePostData'));
-
-                add_action('manage_media_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
 
                 //Actions are only called when the attachment content is modified so we can't use it.
                 //add_action('add_attachment', array($oUserAccessManager, 'savePostData'));
                 //add_action('edit_attachment', array($oUserAccessManager, 'savePostData'));
+                //The filter we use instead of add|edit_attachment action, reason see top
+                add_filter('attachment_fields_to_save', array($oUserAccessManager, 'saveAttachmentData'));
 
                 add_action('edit_user_profile', array($oUserAccessManager, 'showUserProfile'));
                 add_action('profile_update', array($oUserAccessManager, 'saveUserData'));
@@ -151,30 +169,21 @@ if (!function_exists("userAccessManagerAP")) {
                 add_action('edit_category', array($oUserAccessManager, 'saveCategoryData'));
 
                 add_action('bulk_edit_custom_box', array($oUserAccessManager, 'addBulkAction'));
-            }
 
-            //Admin filters
-            if (function_exists('add_filter')) {
-                //The filter we use instead of add|edit_attachment action, reason see top
-                add_filter('attachment_fields_to_save', array($oUserAccessManager, 'saveAttachmentData'));
-
-                add_filter('manage_posts_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
-                add_filter('manage_pages_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
-
-                add_filter('manage_users_columns', array($oUserAccessManager, 'addUserColumnsHeader'), 10);
-                add_filter('manage_users_custom_column', array($oUserAccessManager, 'addUserColumn'), 10, 3);
-
-                add_filter('manage_edit-category_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
-                add_filter('manage_category_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
-            }
-
-            if ($aUamOptions['lock_file'] == 'true') {
-                add_action('media_meta', array($oUserAccessManager, 'showMediaFile'), 10, 2);
-                add_filter('manage_media_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
+                // taxonomies
+                $taxonomies = get_taxonomies( array('public' => true, '_builtin' => false));
+                foreach( $taxonomies as $tax) {
+                    add_filter('manage_edit-'.$tax.'_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
+                    add_action('manage_'.$tax.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
+                    add_action($tax.'_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
+                    add_action($tax.'_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
+                    add_action('create_'.$tax, array($oUserAccessManager, 'saveCategoryData'));
+                    add_action('edit_'.$tax, array($oUserAccessManager, 'saveCategoryData'));
+                }
             }
         }
 
-        //Clean up at deleting should be always done.
+        //Clean up at deleting should always be done.
         if (function_exists('add_action')) {
             add_action('update_option_permalink_structure', array($oUserAccessManager, 'updatePermalink'));
             add_action('wp_dashboard_setup', array($oUserAccessManager, 'setupAdminDashboard'));
@@ -182,6 +191,12 @@ if (!function_exists("userAccessManagerAP")) {
             add_action('delete_attachment', array($oUserAccessManager, 'removePostData'));
             add_action('delete_user', array($oUserAccessManager, 'removeUserData'));
             add_action('delete_category', array($oUserAccessManager, 'removeCategoryData'), 10, 2);
+
+            // taxonomies
+            $taxonomies = get_taxonomies( array('public' => true, '_builtin' => false));
+            foreach( $taxonomies as $tax) {
+                add_action('delete_'.$tax, array($oUserAccessManager, 'removeCategoryData'));
+            }
         }
 
         $oUserAccessManager->noRightsToEditContent();
@@ -318,7 +333,7 @@ if (isset($oUserAccessManager)) {
         add_filter('comments_array', array($oUserAccessManager, 'showComment'));
         add_filter('the_comments', array($oUserAccessManager, 'showComment'));
         add_filter('get_pages', array($oUserAccessManager, 'showPage'));
-        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 2);
+        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 3);
         add_filter('get_next_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
         add_filter('get_previous_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
         add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
