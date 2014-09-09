@@ -60,17 +60,34 @@ class UamAccessHandler
     {
         $this->_oUserAccessManager = $oUserAccessManager;
 
-        $aPostTypes = get_post_types(array(), 'objects');
-
-        foreach ($aPostTypes as $oPostType) {
-            if ($oPostType->publicly_queryable) {
-                $this->_aPostableTypes[] = $oPostType->name;
-            }
-        }
+        $this->_aPostableTypes = array_merge( $this->_aPostableTypes, get_post_types(array('publicly_queryable' => true), 'names'));
+        $this->_aPostableTypes = array_unique( $this->_aPostableTypes);
 
         $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
 
         $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
+        add_action( 'registered_post_type', array( &$this, 'registered_post_type'), 10, 2);
+    }
+
+    /**
+     * used for adding custom post types using the registered_post_type hook
+     * @see http://wordpress.org/support/topic/modifying-post-type-using-the-registered_post_type-hook
+     *
+     * @param $post_type the string for the new post_type
+     * @param $args the array of arguments used to create the post_type
+     *
+     */
+    public function registered_post_type( $post_type, $args)
+    {
+        if( $args->publicly_queryable) {
+            $this->_aPostableTypes[] = $args->name;
+            $this->_aPostableTypes = array_unique( $this->_aPostableTypes);
+            $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
+            $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
+            $this->_aAllObjectTypes = null;
+            $this->_aAllObjectTypesMap = null;
+            $this->_aValidObjectTypes = null;
+        }
     }
 
     /**
