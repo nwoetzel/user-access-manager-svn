@@ -287,12 +287,12 @@ class UamAccessHandler
          */
         global $wpdb;
 
-        $aUserGroupsDb = $wpdb->get_results( $wpdb->prepare(
+        $aUserGroupsDb = $wpdb->get_results(
             	"SELECT ID
-            	FROM %s
-            	ORDER BY ID",
-                DB_ACCESSGROUP
-            ),
+            	FROM " . DB_ACCESSGROUP . "
+            	ORDER BY ID;"
+
+            ,
             ARRAY_A
         );
 
@@ -545,10 +545,10 @@ class UamAccessHandler
 
         $sCategoriesAssignedToUserSql = $wpdb->prepare(
             "SELECT igc.object_id
-    		 FROM %s AS igc
-    		 WHERE igc.object_type = 'category'
+    		 FROM " . DB_ACCESSGROUP_TO_OBJECT . " AS igc
+    		 WHERE igc.object_type = %s
     		 AND igc.group_id IN (%s)",
-             DB_ACCESSGROUP_TO_OBJECT,
+             "category",
              $sUserUserGroups
         );
 
@@ -576,10 +576,10 @@ class UamAccessHandler
 
         $sPostAssignedToUserSql = $wpdb->prepare(
             "SELECT igp.object_id
-        	 FROM %s AS igp
-        	 WHERE igp.object_type IN (".$sPostableTypes.")
+        	 FROM " . DB_ACCESSGROUP_TO_OBJECT . " AS igp
+        	 WHERE igp.object_type IN (%s)
              AND igp.group_id IN (%s)",
-             DB_ACCESSGROUP_TO_OBJECT,
+             $sPostableTypes,
              $sUserUserGroup
         );
 
@@ -630,49 +630,38 @@ class UamAccessHandler
 
         $sPostSql = $wpdb->prepare(
             "SELECT DISTINCT p.ID
-        	 FROM %s AS p
-        	 INNER JOIN %s AS tr
+        	 FROM $wpdb->posts AS p
+        	 INNER JOIN $wpdb->term_relationships AS tr
         		ON p.ID = tr.object_id
-        	INNER JOIN %s tt
+        	INNER JOIN $wpdb->term_taxonomy tt
         		ON tr.term_taxonomy_id = tt.term_taxonomy_id
-            WHERE tt.taxonomy = '%s'
+            WHERE tt.taxonomy = %s
     		AND tt.term_id IN (
     			SELECT gc.object_id
-    			FROM %s iag
-    			INNER JOIN %s AS gc
+    			FROM " . DB_ACCESSGROUP . " iag
+    			INNER JOIN " . DB_ACCESSGROUP_TO_OBJECT . " AS gc
     				ON iag.id = gc.group_id
     			WHERE gc.object_type = 'category'
-    			AND iag.%s_access != 'all'
+    			AND iag." . $sAccessType . "_access != 'all'
     			AND gc.object_id NOT IN (%s)
     		) AND p.ID NOT IN (%s)
     		UNION
     		SELECT DISTINCT gp.object_id
-    		FROM %s AS ag
-            INNER JOIN %s AS gp
+    		FROM " . DB_ACCESSGROUP . " AS ag
+            INNER JOIN " . DB_ACCESSGROUP_TO_OBJECT . " AS gp
                 ON ag.id = gp.group_id
-    		INNER JOIN %s AS tr
+    		INNER JOIN $wpdb->term_relationships AS tr
         		ON gp.object_id  = tr.object_id
-        	INNER JOIN %s tt
+        	INNER JOIN $wpdb->term_taxonomy tt
         		ON tr.term_taxonomy_id = tt.term_taxonomy_id
-    		WHERE gp.object_type = '%s'
-    		AND ag.%s_access != 'all'
+    		WHERE gp.object_type = %s
+    		AND ag." . $sAccessType . "_access != 'all'
     		AND gp.object_id  NOT IN (%s)
     		AND tt.term_id NOT IN (%s)",
-            $wpdb->posts,
-            $wpdb->term_relationships,
-            $wpdb->term_taxonomy,
             "category",
-            DB_ACCESSGROUP,
-            DB_ACCESSGROUP_TO_OBJECT,
-            $sAccessType,
             $sCategoriesAssignedToUser,
             $sPostAssignedToUser,
-            DB_ACCESSGROUP,
-            DB_ACCESSGROUP_TO_OBJECT,
-            $wpdb->term_relationships,
-            $wpdb->term_taxonomy,
             "post",
-            $sAccessType,
             $sPostAssignedToUser,
             $sCategoriesAssignedToUser
         );

@@ -1,20 +1,26 @@
 === User Access Manager ===
-Contributors: GM_Alex
+Contributors: GM_Alex, nwoetzel
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=1947052
-Tags: admin, access, member area, members, member, member access, page, pages, post, posts, private, privacy, restrict, user, user access manager, user management
+Tags: admin, access, member area, members, member, member access, page, pages, post, posts, private, privacy, restrict, user, user access manager, user management, wp-cli
 Requires at least: 3.0
-Tested up to: 3.8.0
-Stable tag: 1.2.5.0
+Tested up to: 4.0
+Stable tag: 1.3.0
 
 With the "User Access Manager"-plugin you can manage the access to your posts, pages and files.
 
 == Description ==
 
-With the "User Access Manager"-plugin you can manage the access to your posts, pages and files. You only create a user group, put registered users to this and set up the rights for this group. From now on the post/page is only accessible and writable for the specified group. This plugin is useful if you need a member area or a private section at your blog or you want that other people can write at your blog but not everywhere.
+With the "User Access Manager"-plugin you can manage the access to your posts, pages and files. You only create a user 
+group, put registered users to this and set up the rights for this group. From now on the post/page is only accessible 
+and writable for the specified group. This plugin is useful if you need a member area or a private section at your blog 
+or you want that other people can write at your blog but not everywhere. It also handles access management on taxonomies
+ (e.g. post category) and custom post types, as they are often defined by themes or plugins.
 
 Check out the [User Access Manager - NextGEN Gallery Extension](http://wordpress.org/extend/plugins/user-access-manager-nextgen-gallery-extension/).
 
-Appeal: If it works click the "Works" button, if it don't works click the "Broken" button and report the issue here: [http://mantis.gm-alex.de](http://mantis.gm-alex.de). That is the only way to find bugs and see if the plugin works proper. Thanks.
+Appeal: If it works click the "Works" button, if it don't works click the "Broken" button and report the issue here:
+[http://mantis.gm-alex.de](http://mantis.gm-alex.de). That is the only way to find bugs and see if the plugin works 
+proper. Thanks.
 
 <em>Feature list</em>
 

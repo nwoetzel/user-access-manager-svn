@@ -64,9 +64,8 @@ class UamUserGroup
 
             $aDbUserGroup = $wpdb->get_row( $wpdb->prepare(
             	    "SELECT *
-    			    FROM %s
+    			    FROM " . DB_ACCESSGROUP . "
     			    WHERE ID = %d",
-                    DB_ACCESSGROUP,
                     $this->getId()
                 ),
                 ARRAY_A
@@ -861,10 +860,10 @@ class UamUserGroup
              */
             global $wpdb;
 
-            $aDbUsers = $wpdb->get_results( $wpdb->prepare(
+            $aDbUsers = $wpdb->get_results(
                 "SELECT ID, user_nicename
-                FROM %s", $wpdb->users
-            ));
+                FROM $wpdb->users;"
+            );
 
             $aFullUsers = array();
 
@@ -1012,12 +1011,10 @@ class UamUserGroup
 
                 $aDbObjects = $wpdb->get_results( $wpdb->prepare(
                     "SELECT tr.object_id AS objectId, tt.term_id AS categoryId
-                    FROM %s AS tr,
-                    %s AS tt
+                    FROM $wpdb->term_relationships AS tr,
+                    $wpdb->term_taxonomy AS tt
                     WHERE tr.term_taxonomy_id = tt.term_taxonomy_id
-                    AND tt.taxonomy = '%s'",
-                    $wpdb->term_relationships,
-                    $wpdb->term_taxonomy,
+                    AND tt.taxonomy = %s",
                     "category"
                 ));
 
