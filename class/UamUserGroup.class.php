@@ -62,11 +62,13 @@ class UamUserGroup
 
             $this->_iId = $iId;
 
-            $aDbUserGroup = $wpdb->get_row(
-                "SELECT *
-                FROM ".DB_ACCESSGROUP."
-                WHERE ID = ".$this->getId()."
-                LIMIT 1",
+            $aDbUserGroup = $wpdb->get_row( $wpdb->prepare(
+            	    "SELECT *
+    			    FROM %s
+    			    WHERE ID = %d",
+                    DB_ACCESSGROUP,
+                    $this->getId()
+                ),
                 ARRAY_A
             );
 
@@ -117,9 +119,9 @@ class UamUserGroup
          */
         global $wpdb;
 
-        $wpdb->query(
-            "DELETE FROM " . DB_ACCESSGROUP . "
-            WHERE ID = $this->_iId LIMIT 1"
+        $wpdb->delete(
+        	DB_ACCESSGROUP,
+        	array( 'ID' => $this->_iId)
         );
 
         foreach ($this->getAllObjectTypes() as $sObjectType) {
@@ -143,36 +145,45 @@ class UamUserGroup
          */
         global $wpdb;
 
+        // no group with that name yet
         if ($this->_iId == null) {
-            $wpdb->query(
-                "INSERT INTO " . DB_ACCESSGROUP . " (
-                    ID,
-                    groupname,
-                    groupdesc,
-                    read_access,
-                    write_access,
-                    ip_range
+            $wpdb->insert(
+            	DB_ACCESSGROUP,
+            	array(
+            		    'groupname'    => $this->_sGroupName,
+            		    'groupdesc'    => $this->_sGroupDesc,
+            		    'read_access'  => $this->_sReadAccess,
+            		    'write_access' => $this->_sWriteAccess,
+            		    'ip_range'     => $this->_sIpRange
+            	),
+                array(
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
                 )
-                VALUES (
-                    NULL,
-                    '" . $this->_sGroupName . "',
-                    '" . $this->_sGroupDesc . "',
-                    '" . $this->_sReadAccess . "',
-                    '" . $this->_sWriteAccess . "',
-                    '" . $this->_sIpRange . "'
-                )"
             );
-
+            // get the insertion id
             $this->_iId = $wpdb->insert_id;
-        } else {
-            $wpdb->query(
-                "UPDATE " . DB_ACCESSGROUP . "
-                SET groupname = '" . $this->_sGroupName . "',
-                    groupdesc = '" . $this->_sGroupDesc . "',
-                    read_access = '" . $this->_sReadAccess . "',
-                    write_access = '" . $this->_sWriteAccess . "',
-                    ip_range = '" . $this->_sIpRange . "'
-                WHERE ID = " . $this->_iId
+        } else { // just updating
+            $wpdb->update(
+            	DB_ACCESSGROUP,
+            	array(
+            		    'groupname'    => $this->_sGroupName,
+            		    'groupdesc'    => $this->_sGroupDesc,
+            		    'read_access'  => $this->_sReadAccess,
+            		    'write_access' => $this->_sWriteAccess,
+            		    'ip_range'     => $this->_sIpRange
+            	),
+                array( 'ID' => $this->_iId),
+                array(
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s',
+                )
             );
 
             if ($blRemoveOldAssignments === true) {
@@ -458,7 +469,7 @@ class UamUserGroup
             $blWithInfo = $aArguments[1];
 
             return $this->objectIsMember(
-                $sObjectType,
+            	$sObjectType,
                 $iObjectId,
                 $blWithInfo
             );
@@ -482,19 +493,19 @@ class UamUserGroup
 
         if ($sAction == 'select') {
             $sSql = "SELECT object_id as id
-                FROM ".DB_ACCESSGROUP_TO_OBJECT."
-                WHERE group_id = ".$this->getId()."
-                AND object_type = '".$sObjectType ."'";
+    			FROM ".DB_ACCESSGROUP_TO_OBJECT."
+    			WHERE group_id = ".$this->getId()."
+    			AND object_type = '".$sObjectType ."'";
         } elseif ($sAction == 'delete') {
             $sSql = "DELETE FROM ".DB_ACCESSGROUP_TO_OBJECT."
-                WHERE group_id = ".$this->getId()."
+        		WHERE group_id = ".$this->getId()."
                 AND object_type = '".$sObjectType ."'";
         } elseif ($sAction == 'insert') {
             $sSql = "INSERT INTO ".DB_ACCESSGROUP_TO_OBJECT." (
-                    group_id,
-                    object_id,
-                    object_type
-                ) VALUES ";
+            		group_id,
+            		object_id,
+            		object_type
+            	) VALUES ";
 
             foreach ($aKeys as $sKey) {
                 $sKey = trim($sKey);
@@ -659,7 +670,7 @@ class UamUserGroup
         }
     }
 
-    /**
+	/**
      * Checks if the given object is a member of the group.
      *
      * @param string   $sObjectType The object type.
@@ -850,10 +861,10 @@ class UamUserGroup
              */
             global $wpdb;
 
-            $aDbUsers = $wpdb->get_results(
+            $aDbUsers = $wpdb->get_results( $wpdb->prepare(
                 "SELECT ID, user_nicename
-                FROM ".$wpdb->users
-            );
+                FROM %s", $wpdb->users
+            ));
 
             $aFullUsers = array();
 
@@ -932,7 +943,7 @@ class UamUserGroup
                 if ($aUamOptions['lock_recursive'] == 'true') {
                     //We have to remove the filter to get all categories
                     $blRemoveSuccess = remove_filter(
-                        'get_terms',
+                    	'get_terms',
                         array(
                             $this->getAccessHandler()->getUserAccessManager(),
                             'showCategory'
@@ -948,7 +959,7 @@ class UamUserGroup
                         $aCategoryChildren = get_categories($aArgs);
 
                         add_filter(
-                            'get_terms',
+                        	'get_terms',
                             array($aUserAccessManager, 'showCategory')
                         );
 
@@ -999,13 +1010,16 @@ class UamUserGroup
                  */
                 global $wpdb;
 
-                $aDbObjects = $wpdb->get_results(
+                $aDbObjects = $wpdb->get_results( $wpdb->prepare(
                     "SELECT tr.object_id AS objectId, tt.term_id AS categoryId
-                    FROM ".$wpdb->term_relationships." AS tr,
-                    ".$wpdb->term_taxonomy." AS tt
-                WHERE tr.term_taxonomy_id = tt.term_taxonomy_id
-                    AND tt.taxonomy = 'category'"
-                );
+                    FROM %s AS tr,
+                    %s AS tt
+                    WHERE tr.term_taxonomy_id = tt.term_taxonomy_id
+                    AND tt.taxonomy = '%s'",
+                    $wpdb->term_relationships,
+                    $wpdb->term_taxonomy,
+                    "category"
+                ));
 
                 foreach ($aDbObjects as $oDbObject) {
                     if (!isset($this->_aObjectsInCategory[$oDbObject->objectId])) {

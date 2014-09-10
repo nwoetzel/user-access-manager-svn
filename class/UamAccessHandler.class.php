@@ -60,17 +60,34 @@ class UamAccessHandler
     {
         $this->_oUserAccessManager = $oUserAccessManager;
 
-        $aPostTypes = get_post_types(array(), 'objects');
-
-        foreach ($aPostTypes as $oPostType) {
-            if ($oPostType->publicly_queryable) {
-                $this->_aPostableTypes[] = $oPostType->name;
-            }
-        }
+        $this->_aPostableTypes = array_merge( $this->_aPostableTypes, get_post_types(array('publicly_queryable' => true), 'names'));
+        $this->_aPostableTypes = array_unique( $this->_aPostableTypes);
 
         $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
 
         $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
+        add_action( 'registered_post_type', array( &$this, 'registered_post_type'), 10, 2);
+    }
+
+    /**
+     * used for adding custom post types using the registered_post_type hook
+     * @see http://wordpress.org/support/topic/modifying-post-type-using-the-registered_post_type-hook
+     *
+     * @param $post_type the string for the new post_type
+     * @param $args the array of arguments used to create the post_type
+     *
+     */
+    public function registered_post_type( $post_type, $args)
+    {
+        if( $args->publicly_queryable) {
+            $this->_aPostableTypes[] = $args->name;
+            $this->_aPostableTypes = array_unique( $this->_aPostableTypes);
+            $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
+            $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
+            $this->_aAllObjectTypes = null;
+            $this->_aAllObjectTypesMap = null;
+            $this->_aValidObjectTypes = null;
+        }
     }
 
     /**
@@ -270,10 +287,13 @@ class UamAccessHandler
          */
         global $wpdb;
 
-        $aUserGroupsDb = $wpdb->get_results(
-            "SELECT ID
-            FROM " . DB_ACCESSGROUP . "
-            ORDER BY ID", ARRAY_A
+        $aUserGroupsDb = $wpdb->get_results( $wpdb->prepare(
+            	"SELECT ID
+            	FROM %s
+            	ORDER BY ID",
+                DB_ACCESSGROUP
+            ),
+            ARRAY_A
         );
 
         if (isset($aUserGroupsDb)) {
@@ -502,8 +522,7 @@ class UamAccessHandler
             $sUserUserGroups = "''";
         }
 
-        $this->_aSqlResults['groupsForUser'] = $sUserUserGroups;
-        return $this->_aSqlResults['groupsForUser'];
+        return $this->_aSqlResults['groupsForUser'] = $sUserUserGroups;
     }
 
     /**
@@ -524,14 +543,16 @@ class UamAccessHandler
 
         $sUserUserGroups = $this->_getUserGroupsForUserAsSqlString();
 
-        $sCategoriesAssignedToUserSql = "
-            SELECT igc.object_id
-            FROM ".DB_ACCESSGROUP_TO_OBJECT." AS igc
-            WHERE igc.object_type = 'category'
-            AND igc.group_id IN (".$sUserUserGroups.")";
+        $sCategoriesAssignedToUserSql = $wpdb->prepare(
+            "SELECT igc.object_id
+    		 FROM %s AS igc
+    		 WHERE igc.object_type = 'category'
+    		 AND igc.group_id IN (%s)",
+             DB_ACCESSGROUP_TO_OBJECT,
+             $sUserUserGroups
+        );
 
-        $this->_aSqlResults['categoriesAssignedToUser'] = $wpdb->get_col($sCategoriesAssignedToUserSql);
-        return $this->_aSqlResults['categoriesAssignedToUser'];
+        return $this->_aSqlResults['categoriesAssignedToUser'] = $wpdb->get_col($sCategoriesAssignedToUserSql);
     }
 
     /**
@@ -553,17 +574,19 @@ class UamAccessHandler
         $sUserUserGroup = $this->_getUserGroupsForUserAsSqlString();
         $sPostableTypes = "'".implode("','", $this->getPostableTypes())."'";
 
-        $sPostAssignedToUserSql = "
-            SELECT igp.object_id
-            FROM ".DB_ACCESSGROUP_TO_OBJECT." AS igp
-            WHERE igp.object_type IN (".$sPostableTypes.")
-            AND igp.group_id IN (".$sUserUserGroup.")";
+        $sPostAssignedToUserSql = $wpdb->prepare(
+            "SELECT igp.object_id
+        	 FROM %s AS igp
+        	 WHERE igp.object_type IN (".$sPostableTypes.")
+             AND igp.group_id IN (%s)",
+             DB_ACCESSGROUP_TO_OBJECT,
+             $sUserUserGroup
+        );
 
-        $this->_aSqlResults['postsAssignedToUser'] = $wpdb->get_col($sPostAssignedToUserSql);
-        return $this->_aSqlResults['postsAssignedToUser'];
+        return $this->_aSqlResults['postsAssignedToUser'] = $wpdb->get_col($sPostAssignedToUserSql);
     }
 
-     /**
+ 	/**
      * Returns the excluded posts.
      *
      * @return array
@@ -605,40 +628,57 @@ class UamAccessHandler
             $sPostAssignedToUser = "''";
         }
 
-        $sPostSql = "SELECT DISTINCT p.ID
-            FROM $wpdb->posts AS p
-            INNER JOIN $wpdb->term_relationships AS tr
-                ON p.ID = tr.object_id
-            INNER JOIN $wpdb->term_taxonomy tt
-                ON tr.term_taxonomy_id = tt.term_taxonomy_id
-            WHERE tt.taxonomy = 'category'
-            AND tt.term_id IN (
-                SELECT gc.object_id
-                FROM ".DB_ACCESSGROUP." iag
-                INNER JOIN ".DB_ACCESSGROUP_TO_OBJECT." AS gc
-                    ON iag.id = gc.group_id
-                WHERE gc.object_type = 'category'
-                AND iag.".$sAccessType."_access != 'all'
-                AND gc.object_id  NOT IN (".$sCategoriesAssignedToUser.")
-            ) AND p.ID NOT IN (".$sPostAssignedToUser.")
-            UNION
-            SELECT DISTINCT gp.object_id
-            FROM ".DB_ACCESSGROUP." AS ag
-            INNER JOIN ".DB_ACCESSGROUP_TO_OBJECT." AS gp
+        $sPostSql = $wpdb->prepare(
+            "SELECT DISTINCT p.ID
+        	 FROM %s AS p
+        	 INNER JOIN %s AS tr
+        		ON p.ID = tr.object_id
+        	INNER JOIN %s tt
+        		ON tr.term_taxonomy_id = tt.term_taxonomy_id
+            WHERE tt.taxonomy = '%s'
+    		AND tt.term_id IN (
+    			SELECT gc.object_id
+    			FROM %s iag
+    			INNER JOIN %s AS gc
+    				ON iag.id = gc.group_id
+    			WHERE gc.object_type = 'category'
+    			AND iag.%s_access != 'all'
+    			AND gc.object_id NOT IN (%s)
+    		) AND p.ID NOT IN (%s)
+    		UNION
+    		SELECT DISTINCT gp.object_id
+    		FROM %s AS ag
+            INNER JOIN %s AS gp
                 ON ag.id = gp.group_id
-            INNER JOIN $wpdb->term_relationships AS tr
-                ON gp.object_id  = tr.object_id
-            INNER JOIN $wpdb->term_taxonomy tt
-                ON tr.term_taxonomy_id = tt.term_taxonomy_id
-            WHERE gp.object_type = 'post'
-            AND ag.".$sAccessType."_access != 'all'
-            AND gp.object_id  NOT IN (".$sPostAssignedToUser.")
-            AND tt.term_id NOT IN (".$sCategoriesAssignedToUser.")";
+    		INNER JOIN %s AS tr
+        		ON gp.object_id  = tr.object_id
+        	INNER JOIN %s tt
+        		ON tr.term_taxonomy_id = tt.term_taxonomy_id
+    		WHERE gp.object_type = '%s'
+    		AND ag.%s_access != 'all'
+    		AND gp.object_id  NOT IN (%s)
+    		AND tt.term_id NOT IN (%s)",
+            $wpdb->posts,
+            $wpdb->term_relationships,
+            $wpdb->term_taxonomy,
+            "category",
+            DB_ACCESSGROUP,
+            DB_ACCESSGROUP_TO_OBJECT,
+            $sAccessType,
+            $sCategoriesAssignedToUser,
+            $sPostAssignedToUser,
+            DB_ACCESSGROUP,
+            DB_ACCESSGROUP_TO_OBJECT,
+            $wpdb->term_relationships,
+            $wpdb->term_taxonomy,
+            "post",
+            $sAccessType,
+            $sPostAssignedToUser,
+            $sCategoriesAssignedToUser
+        );
 
-        $this->_aSqlResults['excludedPosts'] = $wpdb->get_col($sPostSql);
-        return $this->_aSqlResults['excludedPosts'];
+        return $this->_aSqlResults['excludedPosts'] = $wpdb->get_col($sPostSql);
     }
-
 
     /*
      * Other functions
@@ -772,7 +812,7 @@ class UamAccessHandler
     }
 
     /**
-     * Registers object that should be handled by the user access manager.
+     * Registers object that should be handelt by the user access manager.
      *
      * @param array $oObject The object which you want to register.
      *

@@ -138,12 +138,12 @@ class UserAccessManager
         global $wpdb;
         $aBlogIds = array();
 
-        if (is_multisite()) {
-            $aBlogIds = $wpdb->get_col(
-                "SELECT blog_id
-                FROM ".$wpdb->blogs
-            );
-        }
+    	if (is_multisite()) {
+			$aBlogIds = $wpdb->get_col( $wpdb->prepare(
+				"SELECT blog_id
+				FROM %s", $wpdb->blogs
+			));
+    	}
 
         return $aBlogIds;
     }
@@ -193,10 +193,10 @@ class UserAccessManager
 
         $sDbAccessGroupTable = $wpdb->prefix.'uam_accessgroups';
 
-        $sDbUserGroup = $wpdb->get_var(
-            "SHOW TABLES
-            LIKE '".$sDbAccessGroupTable."'"
-        );
+        $sDbUserGroup = $wpdb->get_var( $wpdb->prepare(
+        	"SHOW TABLES
+        	LIKE '%s'", $sDbAccessGroupTable
+        ));
 
         if ($sDbUserGroup != $sDbAccessGroupTable) {
             dbDelta(

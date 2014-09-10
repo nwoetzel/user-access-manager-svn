@@ -37,10 +37,10 @@ function insertUpdateGroup($iUserGroupId)
     }
 
     $oUamUserGroup->setGroupName($_POST['userGroupName']);
-    $oUamUserGroup->setGroupDesc($_POST['userGroupDescription']);
-    $oUamUserGroup->setReadAccess($_POST['readAccess']);
-    $oUamUserGroup->setWriteAccess($_POST['writeAccess']);
-    $oUamUserGroup->setIpRange($_POST['ipRange']);
+	$oUamUserGroup->setGroupDesc($_POST['userGroupDescription']);
+	$oUamUserGroup->setReadAccess($_POST['readAccess']);
+	$oUamUserGroup->setWriteAccess($_POST['writeAccess']);
+	$oUamUserGroup->setIpRange($_POST['ipRange']);
 
     if (isset($_POST['roles'])) {
         $aRoles = $_POST['roles'];
@@ -73,22 +73,22 @@ function getPrintEditGroup($sGroupId = null)
     global $oUserAccessManager;
     $oUamUserGroup = $oUserAccessManager->getAccessHandler()->getUserGroups($sGroupId);
     ?>
-    <form method="post" action="<?php
-        echo reset(
-            explode("?", $_SERVER["REQUEST_URI"])
-        ) . "?page=" . $_GET['page'];
-    ?>">
-    <?php
-    wp_nonce_field('uamInsertUpdateGroup', 'uamInsertUpdateGroupNonce');
+	<form method="post" action="<?php
+	    echo reset(
+	        explode("?", $_SERVER["REQUEST_URI"])
+	    ) . "?page=" . $_GET['page'];
+	?>">
+	<?php
+	wp_nonce_field('uamInsertUpdateGroup', 'uamInsertUpdateGroupNonce');
 
     if (isset($sGroupId)) {
         ?>
-        <input type="hidden" value="updateGroup" name="action" />
-        <input type="hidden" value="<?php echo $sGroupId; ?>" name="userGroupId" />
-        <?php
+    	<input type="hidden" value="updateGroup" name="action" />
+    	<input type="hidden" value="<?php echo $sGroupId; ?>" name="userGroupId" />
+		<?php
     } else {
         ?>
-        <input type="hidden" value="addGroup" name="action" />
+    	<input type="hidden" value="addGroup" name="action" />
         <?php
     }
     ?>
@@ -102,13 +102,13 @@ function getPrintEditGroup($sGroupId = null)
         echo $oUamUserGroup->getGroupName();
     }
                         ?>" id="userGroupName" name="userGroupName" /><br />
-                        <?php echo TXT_UAM_GROUP_NAME_DESC; ?>
-                    </td>
-                </tr>
-                <tr class="form-field form-required">
-                    <th valign="top" scope="row"><?php echo TXT_UAM_GROUP_DESC; ?></th>
-                    <td>
-                        <input type="text" size="40" value="<?php
+		                <?php echo TXT_UAM_GROUP_NAME_DESC; ?>
+		        	</td>
+				</tr>
+            	<tr class="form-field form-required">
+            		<th valign="top" scope="row"><?php echo TXT_UAM_GROUP_DESC; ?></th>
+            		<td>
+            			<input type="text" size="40" value="<?php
     if (isset($sGroupId)) {
         echo $oUamUserGroup->getGroupDesc();
     }
@@ -168,11 +168,11 @@ function getPrintEditGroup($sGroupId = null)
         }
     }
     ?>
-                            >
-                                <?php echo TXT_UAM_ONLY_GROUP_USERS ?>
-                            </option>
-                            <option value="all"
-    <?php
+    						>
+    					        <?php echo TXT_UAM_ONLY_GROUP_USERS ?>
+        					</option>
+    						<option value="all"
+	<?php
     if (isset($sGroupId)) {
         if ($oUamUserGroup->getWriteAccess() == "all") {
             echo 'selected="selected"';
@@ -200,21 +200,21 @@ function getPrintEditGroup($sGroupId = null)
     foreach ($wp_roles->role_names as $role => $name) {
         if ($role != "administrator") {
             ?>
-                            <li class="selectit">
-                                <input id="role-<?php echo $role; ?>" type="checkbox"
-            <?php
+							<li class="selectit">
+								<input id="role-<?php echo $role; ?>" type="checkbox"
+			<?php
 
             if (isset($aGroupRoles[$role])) {
                 echo 'checked="checked"';
             }
             ?>
 
-                                value="<?php echo $role; ?> " name="roles[]" />
-                                <label for="role-<?php echo $role; ?>">
-                                    <?php echo $role; ?>
-                                </label>
-                            </li>
-        <?php
+								value="<?php echo $role; ?> " name="roles[]" />
+                				<label for="role-<?php echo $role; ?>">
+                			        <?php echo $role; ?>
+                				</label>
+							</li>
+		<?php
         }
     }
     ?>
@@ -319,7 +319,7 @@ if (!$editGroup) {
             <h2><?php echo TXT_UAM_MANAGE_GROUP; ?></h2>
             <div class="tablenav">
                 <div class="alignleft">
-                    <input type="submit" class="button-secondary delete" name="deleteit" value="<?php echo TXT_UAM_DELETE; ?>" />
+                	<input type="submit" class="button-secondary delete" name="deleteit" value="<?php echo TXT_UAM_DELETE; ?>" />
                 </div>
                 <br class="clear" />
             </div>
@@ -346,19 +346,19 @@ if (!$editGroup) {
     if (isset($aUamUserGroups)) {
         foreach ($aUamUserGroups as $oUamUserGroup) {
             ?>
-                <tr class="alternate" id="group-<?php echo $oUamUserGroup->getId(); ?>">
-                    <th class="check-column" scope="row">
-                        <input type="checkbox" value="<?php echo $oUamUserGroup->getId(); ?>" name="delete[]" />
-                    </th>
-                    <td>
-                        <strong>
-                            <a href="?page=<?php echo $sCurAdminPage; ?>&amp;action=editGroup&amp;id=<?php echo $oUamUserGroup->getId(); ?>">
-                                <?php echo $oUamUserGroup->getGroupName(); ?>
-                            </a>
-                        </strong>
-                    </td>
-                    <td><?php echo $oUamUserGroup->getGroupDesc() ?></td>
-                    <td>
+        		<tr class="alternate" id="group-<?php echo $oUamUserGroup->getId(); ?>">
+        			<th class="check-column" scope="row">
+        				<input type="checkbox" value="<?php echo $oUamUserGroup->getId(); ?>" name="delete[]" />
+        			</th>
+        			<td>
+        				<strong>
+        					<a href="?page=<?php echo $sCurAdminPage; ?>&amp;action=editGroup&amp;id=<?php echo $oUamUserGroup->getId(); ?>">
+        					    <?php echo $oUamUserGroup->getGroupName(); ?>
+        					</a>
+        				</strong>
+        			</td>
+        			<td><?php echo $oUamUserGroup->getGroupDesc() ?></td>
+        			<td>
             <?php
             if ($oUamUserGroup->getReadAccess() == "all") {
                 echo TXT_UAM_ALL;
@@ -430,7 +430,7 @@ if (!$editGroup) {
             </tbody>
         </table>
     </form>
-    </div>
+	</div>
     <?php
 }
 ?>
@@ -445,7 +445,7 @@ if ($editGroup) {
     echo TXT_UAM_ADD_GROUP;
 }
 ?>
-    </h2>
+	</h2>
 <?php
 if ($editGroup) {
     $groupId = $_GET['id'];

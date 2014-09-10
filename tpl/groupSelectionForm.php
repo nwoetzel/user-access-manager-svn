@@ -36,10 +36,8 @@ foreach ($aUamUserGroups as $oUamUserGroup) {
             $sAddition .= ' [LR]';
         }
     }
+?>
 
-
-
-    ?>
     <li>
         <input type="checkbox" id="<?php echo $sGroupsFormName; ?>-<?php echo $oUamUserGroup->getId(); ?>" <?php echo $sAttributes;?> value="<?php echo $oUamUserGroup->getId(); ?>" name="<?php echo $sGroupsFormName; ?>[]" />
         <label for="<?php echo $sGroupsFormName; ?>-<?php echo $oUamUserGroup->getId(); ?>" class="selectit" style="display:inline;" >

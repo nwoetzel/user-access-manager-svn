@@ -38,9 +38,9 @@ if (!function_exists('walkPath')) {
             }
 
             $sOut .= '</ul>';
-        }
+    	}
 
-        return $sOut;
+    	return $sOut;
     }
 }
 ?>
