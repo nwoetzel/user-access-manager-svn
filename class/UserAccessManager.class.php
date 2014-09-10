@@ -1740,7 +1740,7 @@ class UserAccessManager
         $oTerm->name .= $this->adminOutput('term', $oTerm->term_id);
 
         if ($sTermType == 'post_tag'
-            || $sTermType == 'category'
+            || ( $sTermType == 'category' || $sTermType == $oTerm->taxonomy)
             && $oUamAccessHandler->checkObjectAccess('category', $oTerm->term_id)
         ) {
             if ($this->atAdminPanel() == false
@@ -1782,7 +1782,7 @@ class UserAccessManager
                 if ($oTerm->count <= 0
                     && $aUamOptions['hide_empty_categories'] == 'true'
                     && ($oTerm->taxonomy == "term"
-                    || $oTerm->taxonomy == "category")
+                    || $oTerm->taxonomy == "category" || $oTerm->taxonomy == $sTermType)
                 ) {
                     $oTerm->isEmpty = true;
                 }
@@ -1811,11 +1811,12 @@ class UserAccessManager
      * The function for the get_terms filter.
      *
      * @param array $aTerms The terms.
+     * @param array $aTaxonomies the taxonomies queried
      * @param array $aArgs  The given arguments.
      *
      * @return array
      */
-    public function showTerms($aTerms = array(), $aArgs = array())
+    public function showTerms($aTerms = array(), $aTaxonomies = array(), $aArgs = array())
     {
         $aShowTerms = array();
 
@@ -1824,7 +1825,7 @@ class UserAccessManager
                 return $aTerms;
             }
 
-            if ($oTerm->taxonomy == 'category'  || $oTerm->taxonomy == 'post_tag') {
+            if ($oTerm->taxonomy == 'category' || $oTerm->taxonomy == 'post_tag' || in_array( $oTerm->taxonomy, $aTaxonomies)) {
                 $oTerm = $this->_getTerm($oTerm->taxonomy, $oTerm);
             }
 
