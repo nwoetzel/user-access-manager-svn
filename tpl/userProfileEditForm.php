@@ -1,11 +1,11 @@
 <?php
 /**
  * userProfileEditForm.php
- * 
+ *
  * Shows the additional content for the user profile edit form.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -17,13 +17,13 @@
 
 global $oUserAccessManager, $wpdb;
 $aUamUserGroups = $oUserAccessManager->getAccessHandler()->getUserGroups();
-    
+
 $sObjectType = 'user';
 
 if (isset($_GET['user_id'])) {
     $iObjectId = $_GET['user_id'];
     $oEditUserData = get_userdata($iObjectId);
-    
+
     $aUserGroupsForObject = $oUserAccessManager->getAccessHandler()->getUserGroupsForObject(
         $sObjectType,
         $iObjectId
@@ -35,12 +35,12 @@ if (isset($_GET['user_id'])) {
 ?>
 <h3><?php echo TXT_UAM_GROUPS; ?></h3>
 <table class="form-table">
-	<tbody>
-		<tr>
-			<th>
-				<label for="usergroups"><?php echo TXT_UAM_SET_UP_USERGROUPS; ?></label>
-			</th>
-			<td>
+    <tbody>
+        <tr>
+            <th>
+                <label for="usergroups"><?php echo TXT_UAM_SET_UP_USERGROUPS; ?></label>
+            </th>
+            <td>
 <?php
 if (!$oUserAccessManager->getAccessHandler()->userIsAdmin($iObjectId)) {
     include 'groupSelectionForm.php';
@@ -48,7 +48,7 @@ if (!$oUserAccessManager->getAccessHandler()->userIsAdmin($iObjectId)) {
     echo TXT_UAM_ADMIN_HINT;
 }
 ?>
-			</td>
-		</tr>
-	</tbody>
+            </td>
+        </tr>
+    </tbody>
 </table>

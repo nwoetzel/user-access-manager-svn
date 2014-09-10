@@ -1,11 +1,11 @@
 <?php
 /**
  * language.define.php
- * 
+ *
  * Defines needed for the language
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -151,7 +151,7 @@ define('TXT_UAM_GROUP_WRITE_ACCESS_DESC', __('The write access.', 'user-access-m
 define('TXT_UAM_GROUP_ADDED', __('Group was added successfully.', 'user-access-manager'));
 define('TXT_UAM_GROUP_NAME_ERROR', __('Group name can not be empty.', 'user-access-manager'));
 define('TXT_UAM_DEL_GROUP', __('Group(s) was deleted successfully.', 'user-access-manager'));
-define('TXT_UAM_NONE', __('none', 'user-access-manager')); 
+define('TXT_UAM_NONE', __('none', 'user-access-manager'));
 define('TXT_UAM_ACCESS_GROUP_EDIT_SUC', __('User group edit successfully.', 'user-access-manager'));
 define('TXT_UAM_IP_RANGE', __('IP range', 'user-access-manager'));
 

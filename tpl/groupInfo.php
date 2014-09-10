@@ -1,11 +1,11 @@
 <?php
 /**
 * groupInfo.php
-* 
+*
 * Shows the group informations at the admim panel.
-* 
+*
 * PHP versions 5
-* 
+*
 * @category  UserAccessManager
 * @package   UserAccessManager
 * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -18,29 +18,29 @@
 if (!function_exists('walkPath')) {
     /**
      * Retruns the html code for the recursive access.
-     * 
+     *
      * @param mixed  $oObject     The object.
      * @param string $sObjectType The type of the object.
-     * 
+     *
      * @return string
      */
     function walkPath($oObject, $sObjectType)
     {
         $sOut = $oObject->name;
-        
+
         if (isset($oObject->recursiveMember[$sObjectType])) {
             $sOut .= '<ul>';
-            
+
             foreach ($oObject->recursiveMember[$sObjectType] as $oRecursiveObject) {
                 $sOut .= '<li>';
                 $sOut .= walkPath($oRecursiveObject, $sObjectType);
                 $sOut .= '</li>';
             }
-            
+
             $sOut .= '</ul>';
-    	}
-    	
-    	return $sOut;
+        }
+
+        return $sOut;
     }
 }
 ?>
@@ -72,9 +72,9 @@ foreach ($oUserAccessManager->getAccessHandler()->getAllObjectTypes() as $sCurOb
     }
 }
 ?>
-	<li class="uam_group_info_head"><?php echo TXT_UAM_GROUP_INFO; ?>:
-		<ul>
-			<li><?php echo TXT_UAM_READ_ACCESS; ?>:
+    <li class="uam_group_info_head"><?php echo TXT_UAM_GROUP_INFO; ?>:
+        <ul>
+            <li><?php echo TXT_UAM_READ_ACCESS; ?>:
 <?php
 if ($oUamUserGroup->getReadAccess() == "all") {
     echo TXT_UAM_ALL;
@@ -82,32 +82,32 @@ if ($oUamUserGroup->getReadAccess() == "all") {
     echo TXT_UAM_ONLY_GROUP_USERS;
 }
 ?>
-			</li>
-			<li><?php echo TXT_UAM_WRITE_ACCESS; ?>:
+            </li>
+            <li><?php echo TXT_UAM_WRITE_ACCESS; ?>:
 <?php
 if ($oUamUserGroup->getWriteAccess()  == "all") {
-    echo TXT_UAM_ALL;   
+    echo TXT_UAM_ALL;
 } elseif ($oUamUserGroup->getWriteAccess()  == "group") {
     echo TXT_UAM_ONLY_GROUP_USERS;
 }
 ?>
-        	</li>
-        	<li>
-        	    <?php echo TXT_UAM_GROUP_ROLE; ?>: <?php
+            </li>
+            <li>
+                <?php echo TXT_UAM_GROUP_ROLE; ?>: <?php
 if ($oUamUserGroup->getObjectsFromType('role')) {
     $sOut = '';
-    
+
     foreach ($oUamUserGroup->getObjectsFromType('role') as $sKey => $sRole) {
         $sOut .= trim($sKey).', ';
     }
-    
+
     echo rtrim($sOut, ', ');
 } else {
     echo TXT_UAM_NONE;
 }
 ?>
-        	</li>
-		</ul>
-	</li>
+            </li>
+        </ul>
+    </li>
 </ul>
 </div>

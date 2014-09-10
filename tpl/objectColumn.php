@@ -1,11 +1,11 @@
 <?php
 /**
  * objectColumn.php
- * 
+ *
  * Shows the setup page at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -24,22 +24,22 @@ $iGroupDiff = count($aUamUserGroupsFull) - count($aUamUserGroups);
 
 if ($aUamUserGroups != array()) {
     ?>
-	<ul>
+    <ul>
     <?php
     foreach ($aUamUserGroups as $oUamUserGroup) {
-        ?> 
-    	<li>
-    	    <a class="uam_group_info_link">
-    		    <?php echo $oUamUserGroup->getGroupName(); ?>
-    		</a>
+        ?>
+        <li>
+            <a class="uam_group_info_link">
+                <?php echo $oUamUserGroup->getGroupName(); ?>
+            </a>
         <?php
         include 'groupInfo.php';
-        ?> 
+        ?>
         </li>
         <?php
     }
     ?>
-	</ul>
+    </ul>
     <?php
 } elseif ($iGroupDiff > 0) {
     echo TXT_UAM_MEMBER_OF_OTHER_GROUPS;

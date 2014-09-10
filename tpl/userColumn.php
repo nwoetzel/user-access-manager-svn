@@ -1,11 +1,11 @@
 <?php
 /**
  * userColumn.php
- * 
+ *
  * Shows the setup page at the admin panel.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>
@@ -22,26 +22,26 @@ $aUserGroupsForObject = $aUamUserGroups;
 
 if ($aUamUserGroups != Array()) {
     ?>
-	<ul>
+    <ul>
     <?php
     foreach ($aUamUserGroups as $oUamUserGroup) {
-        ?> 
-    	<li>
-    		<a class="uam_group_info_link">
-    		    <?php echo $oUamUserGroup->getGroupName(); ?>
-    		</a>
+        ?>
+        <li>
+            <a class="uam_group_info_link">
+                <?php echo $oUamUserGroup->getGroupName(); ?>
+            </a>
         <?php
         include 'groupInfo.php';
-        ?> 
+        ?>
         </li>
         <?php
     }
     ?>
-	</ul>
+    </ul>
     <?php
 } else {
     global $wpdb;
-    
+
     if (!$oUserAccessManager->getAccessHandler()->userIsAdmin($iObjectId)) {
         echo TXT_UAM_NONE;
     } else {

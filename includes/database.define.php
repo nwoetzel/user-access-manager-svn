@@ -1,11 +1,11 @@
 <?php
 /**
  * database.define.php
- * 
+ *
  * Defines needed for the database.
- * 
+ *
  * PHP versions 5
- * 
+ *
  * @category  UserAccessManager
  * @package   UserAccessManager
  * @author    Alexander Schneider <alexanderschneider85@googlemail.com>

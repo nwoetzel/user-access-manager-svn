@@ -1,50 +1,50 @@
-ﬁïvÃù|	Ò	N
+ÔøΩÔøΩvÔøΩÔøΩ|ÔøΩ    ÔøΩ    N
 S
 
 Z
 h
-Å
-°
-≥
-∑
-»
-ÿ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
 
-Á
- Ú
-/Kg'É´…
-÷‰2Î92X
-ã
-ôß≠≈ŸÂ
+ÔøΩ
+ ÔøΩ
+/Kg'ÔøΩÔøΩÔøΩ
+ÔøΩÔøΩ2ÔøΩ92X
+ÔøΩ
+ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 
 
 "8
 %[
-Å
-ï
-©
-ø
-œ
-‚
-Ú
->˚
-l:ß ¨
-wÇ	ëõ≠±ÀŒ
-◊‚È¯
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+ÔøΩ
+>ÔøΩ
+l:ÔøΩ ¨
+wÔøΩ    ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
+ÔøΩÔøΩÔøΩÔøΩ
 
 #BU
 b
 p{
-áï_¶b:i∆§ûkR
-7]fï
-¸'$E$juè'0=BÄ!ô+ªÁ390J{çıüï¢!≤0‘!'48<DP
-Wbhot6Öº\œ,"; ^)©∫√#”˜	6Qnç-™(ÿB(7kC£Á¯ 4Q`Äö)≤1‹(  7 !X z ì !≥  ’ ˆ F!sV! !◊!
-»"÷"Ï"¯"#!*%L%
-O%]%w%%í%©%√%◊%Û%& &7&L&^&s&Yâ&t„&IX'Á¢'åä(\)Kt)q¿)2*%B*&h*è*(¨*+’*à+.ä+π+◊+‰+R¸+9O,;â,>≈,-;-W-Bl-Ø-∆-‰-Á.˜.$
-/02/,c/ê/ó/´/Æ/¥/ª/»/
-Õ/ÿ/	ﬁ/Ë//MlW5XJVS_T="K#YBC<i'16eq*g%9G!
+ÔøΩÔøΩ_ÔøΩb:i∆§ÔøΩkR
+7]fÔøΩ
+ÔøΩ'$E$juÔøΩ'0=BÔøΩ!ÔøΩ+ÔøΩÔøΩ390J{ÔøΩÔøΩÔøΩÔøΩÔøΩ!ÔøΩ0ÔøΩ!'48<DP
+Wbhot6ÔøΩÔøΩ\ÔøΩ,"; ^)ÔøΩÔøΩÔøΩ#ÔøΩÔøΩ    6QnÔøΩ-ÔøΩ(ÔøΩB(7kCÔøΩÔøΩÔøΩ 4Q`ÔøΩÔøΩ)ÔøΩ1ÔøΩ(  7 !X z ÔøΩ !ÔøΩ  ÔøΩ ÔøΩ F!sV!ÔøΩ!ÔøΩÔøΩ!
+ÔøΩ"ÔøΩ"ÔøΩ"ÔøΩ"#!*%L%
+O%]%w%%ÔøΩ%ÔøΩ%ÔøΩ%ÔøΩ%ÔøΩ%& &7&L&^&s&YÔøΩ&tÔøΩ&IX'ÔøΩ'ÔøΩÔøΩ(\)Kt)qÔøΩ)2*%B*&h*ÔøΩ*(ÔøΩ*+ÔøΩ*ÔøΩ+.ÔøΩ+ÔøΩ+ÔøΩ+ÔøΩ+RÔøΩ+9O,;ÔøΩ,>ÔøΩ,-;-W-Bl-ÔøΩ-ÔøΩ-ÔøΩ-ÔøΩ.ÔøΩ.$
+/02/,c/ÔøΩ/ÔøΩ/ÔøΩ/ÔøΩ/ÔøΩ/ÔøΩ/ÔøΩ/
+ÔøΩ/ÔøΩ/    ÔøΩ/ÔøΩ/ÔøΩ/MlW5XJVS_T="K#YBC<i'16eq*g%9G!
 7FH ?(d;@pLo
-.caA3[k/`O:E8IvPf4tsr-QhRD2m	&$uUj)bZ\^+n>]N0,.htaccess password<strong>Note:</strong> An administrator has allways access to all posts/pages.AccessAccess GroupsAccess group descriptionAccess group edit successfully.Access group nameAddAdd access groupAdmin hint textAllow commentsCategoriesContains %1$s of %2$s categoriesContains %1$s of %2$s filesContains %1$s of %2$s pagesContains %1$s of %2$s postsContains %1$s of %2$s usersContent displayed if user has no accessCore modifications installed?Custom URL: Custom page: DeleteDisplayed text as page title if user has no accessDisplayed text as post comment text if user has no accessDisplayed text as post title if user has no accessDownload typeFile settingsFilesFiletypes not to lock: Filetypes to lock: Full accessFull access (Administrator)Group accessGroup infosGroup was added successfully.Group(s) was deleted successfully.Here you will find all other settingsHide complete pagesHide complete postsHide empty categoriesHide page titelHide post commentsHide post titelIP rangeIf you installed the core modifications activated this option.If you select "Yes" all files will locked by a .htaccess file and only users with access can download files.InfoLock all files, type in file types which you will lock if the post/page is locked or define file types which will not be locked. <b>Note:</b> If you have no problems use all to get the maximum security.Lock filesLock recursiveLocked byLocked file typesManage the access to your posts and pages. <strong>Note:</strong> <em>If you activate the plugin your upload dir will protect by a '.htaccess' with a random password and all old downloads insert in a previous post/page will not work anymore. You have to update your posts/pages. If you use already a '.htaccess' file to protect your files the plugin will <strong>overwrite</strong> the '.htaccess'. You can disabel the file locking and set up an other password for the '.htaccess' file at the UAM setting page.</em>Manage user access groupsNoNo groupNo rights!NormalOther settingsPage contentPage settingsPage titlePlease create a access group first.Post commtent textPost contentPost settingsPost titleRead accessRedirect userRole affiliationSelecting "Yes" will hide empty categories which are containing only empty childs or no childs.Selecting "Yes" will hide pages if the user has no access. Pages will also hide in the navigation.Selecting "Yes" will hide posts if the user has no access.Selecting "Yes" will lock all child posts/pages of a post/page if a user has no access to the parent page. Note: Setting this option to "No" could result in display errors relating to the hierarchy.Selecting "Yes" will show the defined text at "%s" behinde the post/page to an logged in admin to show him which posts/pages are locked if he visits his blog.Selecting "Yes" will show the text which is defined at "%s" if user has no access.Selecting "yes" allows users to comment on locked postsSelecting the type for downloading. <strong>Note:</strong> For using fopen you need "safe_mode = off".Set accessSet page accessSet post accessSet up the behaviour of filesSet up the behaviour of locked pagesSet up the behaviour of locked postsSet up the password for the .htaccess access. This password is only needed if you need a direct access to your files.Set up usergroupsSet user accessSettingsSettings updated.Setup what happen if a user visit a post/page with no access.Show admin hint at PostsSorry no rights to view comments!Sorry you have no rights to view this page!The description of the group.The name is used to identify the access user group.The read access.The text which will shown behinde the post/page.The write access.To blog startpageType in the IP ranges of users which are join these groups by there IP address without loggin. Set ranges like "BEGIN"-"END", seperate ranges by using ";", single IPs are also allowded. Example: 192.168.0.1-192.168.0.10;192.168.0.20-192.168.0.30Update groupUpdate settingsUse a random generated pass word.Use the password of the current logged in admin.User is Admin. Full access.UsersWrite accessYesallcollapscollaps allexpandexpand allfopenitselfnoneonly group usersProject-Id-Version: 
+.caA3[k/`O:E8IvPf4tsr-QhRD2m    &$uUj)bZ\^+n>]N0,.htaccess password<strong>Note:</strong> An administrator has allways access to all posts/pages.AccessAccess GroupsAccess group descriptionAccess group edit successfully.Access group nameAddAdd access groupAdmin hint textAllow commentsCategoriesContains %1$s of %2$s categoriesContains %1$s of %2$s filesContains %1$s of %2$s pagesContains %1$s of %2$s postsContains %1$s of %2$s usersContent displayed if user has no accessCore modifications installed?Custom URL: Custom page: DeleteDisplayed text as page title if user has no accessDisplayed text as post comment text if user has no accessDisplayed text as post title if user has no accessDownload typeFile settingsFilesFiletypes not to lock: Filetypes to lock: Full accessFull access (Administrator)Group accessGroup infosGroup was added successfully.Group(s) was deleted successfully.Here you will find all other settingsHide complete pagesHide complete postsHide empty categoriesHide page titelHide post commentsHide post titelIP rangeIf you installed the core modifications activated this option.If you select "Yes" all files will locked by a .htaccess file and only users with access can download files.InfoLock all files, type in file types which you will lock if the post/page is locked or define file types which will not be locked. <b>Note:</b> If you have no problems use all to get the maximum security.Lock filesLock recursiveLocked byLocked file typesManage the access to your posts and pages. <strong>Note:</strong> <em>If you activate the plugin your upload dir will protect by a '.htaccess' with a random password and all old downloads insert in a previous post/page will not work anymore. You have to update your posts/pages. If you use already a '.htaccess' file to protect your files the plugin will <strong>overwrite</strong> the '.htaccess'. You can disabel the file locking and set up an other password for the '.htaccess' file at the UAM setting page.</em>Manage user access groupsNoNo groupNo rights!NormalOther settingsPage contentPage settingsPage titlePlease create a access group first.Post commtent textPost contentPost settingsPost titleRead accessRedirect userRole affiliationSelecting "Yes" will hide empty categories which are containing only empty childs or no childs.Selecting "Yes" will hide pages if the user has no access. Pages will also hide in the navigation.Selecting "Yes" will hide posts if the user has no access.Selecting "Yes" will lock all child posts/pages of a post/page if a user has no access to the parent page. Note: Setting this option to "No" could result in display errors relating to the hierarchy.Selecting "Yes" will show the defined text at "%s" behinde the post/page to an logged in admin to show him which posts/pages are locked if he visits his blog.Selecting "Yes" will show the text which is defined at "%s" if user has no access.Selecting "yes" allows users to comment on locked postsSelecting the type for downloading. <strong>Note:</strong> For using fopen you need "safe_mode = off".Set accessSet page accessSet post accessSet up the behaviour of filesSet up the behaviour of locked pagesSet up the behaviour of locked postsSet up the password for the .htaccess access. This password is only needed if you need a direct access to your files.Set up usergroupsSet user accessSettingsSettings updated.Setup what happen if a user visit a post/page with no access.Show admin hint at PostsSorry no rights to view comments!Sorry you have no rights to view this page!The description of the group.The name is used to identify the access user group.The read access.The text which will shown behinde the post/page.The write access.To blog startpageType in the IP ranges of users which are join these groups by there IP address without loggin. Set ranges like "BEGIN"-"END", seperate ranges by using ";", single IPs are also allowded. Example: 192.168.0.1-192.168.0.10;192.168.0.20-192.168.0.30Update groupUpdate settingsUse a random generated pass word.Use the password of the current logged in admin.User is Admin. Full access.UsersWrite accessYesallcollapscollaps allexpandexpand allfopenitselfnoneonly group usersProject-Id-Version: 
 Report-Msgid-Bugs-To: http://wordpress.org/tag/user-access-manager
 POT-Creation-Date: 2009-03-05 17:39+0000
 PO-Revision-Date: 
