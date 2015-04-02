@@ -318,11 +318,7 @@ if (!$editGroup) {
             <h2><?php echo TXT_UAM_MANAGE_GROUP; ?></h2>
             <div class="tablenav">
                 <div class="alignleft">
-<<<<<<< HEAD
-                	<input type="submit" class="button-secondary delete" name="deleteit" value="<?php echo TXT_UAM_DELETE; ?>" />
-=======
                     <input type="submit" class="button-secondary delete" name="deleteit" value="<?php echo TXT_UAM_DELETE; ?>" />
->>>>>>> refs/heads/master
                 </div>
                 <br class="clear" />
             </div>
