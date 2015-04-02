@@ -8,12 +8,17 @@ if (!defined('ABSPATH')) {
     die();
 }
 
+if( !defined('WP_CLI') || !WP_CLI) {
+    die();
+}
+
 /**
  * manage groups in the user-access-manager plugin
  *
  * @package wp-cli
  * @subpackage commands/community
  * @maintainer nwoetzel
+ * @author Nils Woetzel nils.woetzel@h-its.org
  */
 class Groups_Command extends \WP_CLI\CommandWithDBObject {
     private static $aAllowedAccessValues = array( "group", "all");
