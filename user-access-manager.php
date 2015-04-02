@@ -3,7 +3,7 @@
  * Plugin Name: User Access Manager
  * Plugin URI: http://www.gm-alex.de/projects/wordpress/plugins/user-access-manager/
  * Author URI: http://www.gm-alex.de/
- * Version: 1.2.5.0
+ * Version: 1.2.6.6
  * Author: Alexander Schneider
  * Description: Manage the access to your posts, pages, categories and files.
  *
@@ -124,6 +124,7 @@ if (!function_exists("userAccessManagerAP")) {
         get_currentuserinfo();
         $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
+        $aTaxonomies = get_taxonomies(array('public' => true, '_builtin' => false));
 
         if ($oUamAccessHandler->checkUserAccess()
             || $aUamOptions['authors_can_add_posts_to_groups'] == 'true'
@@ -153,13 +154,15 @@ if (!function_exists("userAccessManagerAP")) {
                 add_action('admin_print_styles', array($oUserAccessManager, 'addStyles'));
                 add_action('wp_print_scripts', array($oUserAccessManager, 'addScripts'));
 
+                add_action('manage_posts_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
+                add_action('manage_pages_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
                 add_action('save_post', array($oUserAccessManager, 'savePostData'));
+
+                add_action('manage_media_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
 
                 //Actions are only called when the attachment content is modified so we can't use it.
                 //add_action('add_attachment', array($oUserAccessManager, 'savePostData'));
                 //add_action('edit_attachment', array($oUserAccessManager, 'savePostData'));
-                //The filter we use instead of add|edit_attachment action, reason see top
-                add_filter('attachment_fields_to_save', array($oUserAccessManager, 'saveAttachmentData'));
 
                 add_action('edit_user_profile', array($oUserAccessManager, 'showUserProfile'));
                 add_action('profile_update', array($oUserAccessManager, 'saveUserData'));
@@ -170,16 +173,36 @@ if (!function_exists("userAccessManagerAP")) {
 
                 add_action('bulk_edit_custom_box', array($oUserAccessManager, 'addBulkAction'));
 
-                // taxonomies
-                $taxonomies = get_taxonomies( array('public' => true, '_builtin' => false));
-                foreach( $taxonomies as $tax) {
-                    add_filter('manage_edit-'.$tax.'_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
-                    add_action('manage_'.$tax.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
-                    add_action($tax.'_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
-                    add_action($tax.'_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
-                    add_action('create_'.$tax, array($oUserAccessManager, 'saveCategoryData'));
-                    add_action('edit_'.$tax, array($oUserAccessManager, 'saveCategoryData'));
+
+                //Taxonomies
+                foreach ($aTaxonomies as $sTaxonomy) {
+                    add_filter('manage_edit-'.$sTaxonomy.'_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
+                    add_action('manage_'.$sTaxonomy.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
+                    add_action($sTaxonomy.'_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
+                    add_action($sTaxonomy.'_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
+                    add_action('create_'.$sTaxonomy, array($oUserAccessManager, 'saveCategoryData'));
+                    add_action('edit_'.$sTaxonomy, array($oUserAccessManager, 'saveCategoryData'));
                 }
+            }
+
+            //Admin filters
+            if (function_exists('add_filter')) {
+                //The filter we use instead of add|edit_attachment action, reason see top
+                add_filter('attachment_fields_to_save', array($oUserAccessManager, 'saveAttachmentData'));
+
+                add_filter('manage_posts_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
+                add_filter('manage_pages_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
+
+                add_filter('manage_users_columns', array($oUserAccessManager, 'addUserColumnsHeader'), 10);
+                add_filter('manage_users_custom_column', array($oUserAccessManager, 'addUserColumn'), 10, 3);
+
+                add_filter('manage_edit-category_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
+                add_filter('manage_category_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
+            }
+
+            if ($aUamOptions['lock_file'] == 'true') {
+                add_action('media_meta', array($oUserAccessManager, 'showMediaFile'), 10, 2);
+                add_filter('manage_media_columns', array($oUserAccessManager, 'addPostColumnsHeader'));
             }
         }
 
@@ -193,9 +216,8 @@ if (!function_exists("userAccessManagerAP")) {
             add_action('delete_category', array($oUserAccessManager, 'removeCategoryData'), 10, 2);
 
             // taxonomies
-            $taxonomies = get_taxonomies( array('public' => true, '_builtin' => false));
-            foreach( $taxonomies as $tax) {
-                add_action('delete_'.$tax, array($oUserAccessManager, 'removeCategoryData'));
+            foreach ($aTaxonomies as $sTaxonomy) {
+                add_action('delete_'.$sTaxonomy, array($oUserAccessManager, 'removeCategoryData'));
             }
         }
 
@@ -247,7 +269,7 @@ if (!function_exists("userAccessManagerAPMenu")) {
 
             //Admin main menu
             if (function_exists('add_menu_page')) {
-                add_menu_page('User Access Manager', 'UAM', 'read', 'uam_usergroup', array($oUserAccessManager, 'printAdminPage'), 'div');
+                add_menu_page('User Access Manager', 'UAM', 'manage_options', 'uam_usergroup', array($oUserAccessManager, 'printAdminPage'), 'div');
             }
 
             //Admin sub menus
@@ -343,7 +365,7 @@ if (isset($oUserAccessManager)) {
     }
 }
 
-// add the cli interface to the known commands
-if ( defined('WP_CLI') && WP_CLI ) {
-    include __DIR__ . '/includes/wp-cli.php';
+//Add the cli interface to the known commands
+if (defined('WP_CLI') && WP_CLI) {
+    include __DIR__.'/includes/wp-cli.php';
 }

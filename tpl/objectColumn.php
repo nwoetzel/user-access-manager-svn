@@ -28,10 +28,10 @@ if ($aUamUserGroups != array()) {
     <?php
     foreach ($aUamUserGroups as $oUamUserGroup) {
         ?>
-    	<li>
-    	    <a class="uam_group_info_link">
-    		    <?php echo $oUamUserGroup->getGroupName(); ?>
-    		</a>
+        <li>
+            <a class="uam_group_info_link">
+                <?php echo $oUamUserGroup->getGroupName(); ?>
+            </a>
         <?php
         include 'groupInfo.php';
         ?>
