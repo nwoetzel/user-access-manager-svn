@@ -177,7 +177,7 @@ if (!function_exists("userAccessManagerAP")) {
                 //Taxonomies
                 foreach ($aTaxonomies as $sTaxonomy) {
                     add_filter('manage_edit-'.$sTaxonomy.'_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
-                    add_action('manage_'.$sTaxonomy.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
+                    add_filter('manage_'.$sTaxonomy.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
                     add_action($sTaxonomy.'_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
                     add_action($sTaxonomy.'_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
                     add_action('create_'.$sTaxonomy, array($oUserAccessManager, 'saveCategoryData'));
